@@ -48,29 +48,29 @@ turnDirection = 90;
 //Function to walk row and break potential leaves
 function walkRow(direction){
     //Chat.log("LOG: Starting walkRow()");
-    Player.getPlayer().lookAt(direction, 0);    //Looks in correct direction
-    KeyBind.keyBind('key.forward', true);       //Begin moving forward
-    KeyBind.keyBind('key.attack', true);        //Begin breaking leaves between trees
+    Player.getPlayer().lookAt(direction, 0);                //Looks in correct direction
+    KeyBind.keyBind('key.forward', true);                   //Begin moving forward
+    KeyBind.keyBind('key.attack', true);                    //Begin breaking leaves between trees
     //Chat.log("LOG: Finished walkRow()");
 }
 
 //Function to harvest a single tree
 function chopTree(direction){
     Chat.log("LOG: Starting chopTree()");
-    KeyBind.keyBind('key.forward', false);      //Stop walking to chop
-    Player.getPlayer().lookAt(direction, 75);   //Look down at bottom log block
-    Client.waitTick(4);                         //Buffer to successfully break bottom block
-    KeyBind.keyBind('key.attack', true);        //Beginning chopping bottom log block
-    Client.waitTick(breakSpeed);                //Chop for amount of time it takes to break log with selected tool
-    Player.getPlayer().lookAt(direction, 0);    //Look at second log block
-    Client.waitTick(breakSpeed);                //Chop for amount of time it takes to break log with selected tool
-    KeyBind.keyBind('key.attack', false);       //Stop chopping to walk forward under tree
-    KeyBind.keyBind('key.forward', true);       //Start walking under tree
-    Client.waitTick(3);                         //Should be time it takes in ticks to walk 1 block; not sure exact value rn
-    KeyBind.keyBind('key.forward', false);      //Stop under tree
-    Player.getPlayer().lookAt(direction, -90);  //Look straight up
-    KeyBind.keyBind('key.attack', true);        //Begin chopping rest of tree
-    Client.waitTick(breakSpeed * treeMaxHeight);//Time it takes to chop maximum height tree
+    KeyBind.keyBind('key.forward', false);                  //Stop walking to chop
+    Player.getPlayer().lookAt(direction, 75);               //Look down at bottom log block
+    Client.waitTick(4);                                     //Buffer to successfully break bottom block
+    KeyBind.keyBind('key.attack', true);                    //Beginning chopping bottom log block
+    Client.waitTick(breakSpeed);                            //Chop for amount of time it takes to break log with selected tool
+    Player.getPlayer().lookAt(direction, 0);                //Look at second log block
+    Client.waitTick(breakSpeed);                            //Chop for amount of time it takes to break log with selected tool
+    KeyBind.keyBind('key.attack', false);                   //Stop chopping to walk forward under tree
+    KeyBind.keyBind('key.forward', true);                   //Start walking under tree
+    Client.waitTick(3);                                     //Should be time it takes in ticks to walk 1 block; not sure exact value rn
+    KeyBind.keyBind('key.forward', false);                  //Stop under tree
+    Player.getPlayer().lookAt(direction, -90);              //Look straight up
+    KeyBind.keyBind('key.attack', true);                    //Begin chopping rest of tree
+    Client.waitTick(breakSpeed * treeMaxHeight);            //Time it takes to chop maximum height tree
     KeyBind.keyBind('key.forward', false);
     KeyBind.keyBind('key.attack', false);
     Chat.log("LOG: Finished chopTree()");
@@ -177,13 +177,13 @@ function nextRowEW(direction){
 function nextRowWE(direction){
     Chat.log("LOG: Starting nextRowWE()");
     while((currentX < (startingX + treeWidth + 1)) == true){
-        currentX = Player.getPlayer().getX();   //Acquires current X coordinate
-        walkRow(direction);                     //Call walkRow function
-        if(currentX >= anchorX_WE){             //If at beginning of first tree in row, start chopping
-            chopTree(direction);                //Call chopTree function
-            anchorX_WE = currentX + treeWidth + 1; //Used to calculate location of next tree
+        currentX = Player.getPlayer().getX();               //Acquires current X coordinate
+        walkRow(direction);                                 //Call walkRow function
+        if(currentX >= anchorX_WE){                         //If at beginning of first tree in row, start chopping
+            chopTree(direction);                            //Call chopTree function
+            anchorX_WE = currentX + treeWidth + 1;          //Used to calculate location of next tree
         }
-        Client.waitTick(1);                     //Prevents crash
+        Client.waitTick(1);                                 //Prevents crash
     }
     KeyBind.keyBind('key.forward', false);
     KeyBind.keyBind('key.attack', false);
@@ -193,7 +193,7 @@ function nextRowWE(direction){
 
 
 //Script start
-if(rowDirection == 0 && turnDirection == 90){     //If farm north->south and turns west
+if(rowDirection == 0 && turnDirection == 90){               //If farm north->south and turns west
     //Repeat for entire length of farm
     while(currentX > startingX - farmLength){
         Chat.log("LOG: Starting North-South, with West turns!");
