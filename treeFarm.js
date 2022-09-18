@@ -58,17 +58,17 @@ function walkRow(direction){
 function chopTree(direction){
     Chat.log("LOG: Starting chopTree()");
     KeyBind.keyBind('key.forward', false);      //Stop walking to chop
-    Player.getPlayer().lookAt(direction, 75)    //Look down at bottom log block
+    Player.getPlayer().lookAt(direction, 75);   //Look down at bottom log block
     Client.waitTick(4);                         //Buffer to successfully break bottom block
     KeyBind.keyBind('key.attack', true);        //Beginning chopping bottom log block
     Client.waitTick(breakSpeed);                //Chop for amount of time it takes to break log with selected tool
-    Player.getPlayer().lookAt(direction, 0)     //Look at second log block
+    Player.getPlayer().lookAt(direction, 0);    //Look at second log block
     Client.waitTick(breakSpeed);                //Chop for amount of time it takes to break log with selected tool
     KeyBind.keyBind('key.attack', false);       //Stop chopping to walk forward under tree
     KeyBind.keyBind('key.forward', true);       //Start walking under tree
     Client.waitTick(3);                         //Should be time it takes in ticks to walk 1 block; not sure exact value rn
     KeyBind.keyBind('key.forward', false);      //Stop under tree
-    Player.getPlayer().lookAt(direction, -90)   //Look straight up
+    Player.getPlayer().lookAt(direction, -90);  //Look straight up
     KeyBind.keyBind('key.attack', true);        //Begin chopping rest of tree
     Client.waitTick(breakSpeed * treeMaxHeight);//Time it takes to chop maximum height tree
     KeyBind.keyBind('key.forward', false);
@@ -207,12 +207,12 @@ if(rowDirection == 0 && turnDirection == 90){     //If farm north->south and tur
     Chat.log("LOG: Script completed successfully!");
 } else if(rowDirection == 180 && turnDirection == 270){     //If farm south->north, turn west
     Chat.log("LOG: Starting South-North, with West turns!");
-    harvestRowSN(rowDirection)
-    nextRowWE(turnDirection)
-    reverseRowDirection = rowDirection
-    reverseRowDirection += 180
-    harvestRowNS(reverseRowDirection)
-    Chat.log("LOG: Script completed successfully!")
+    harvestRowSN(rowDirection);
+    nextRowWE(turnDirection);
+    reverseRowDirection = rowDirection;
+    reverseRowDirection += 180;
+    harvestRowNS(reverseRowDirection);
+    Chat.log("LOG: Script completed successfully!");
 } else {
-    Chat.log("ERROR: Invalid rowDirection and/or turnDirection!")
+    Chat.log("ERROR: Invalid rowDirection and/or turnDirection!");
 }
