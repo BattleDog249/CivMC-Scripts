@@ -79,7 +79,7 @@ function chopTree(direction){
 //Function to harvest an entire row of farm, from North to South
 function harvestRowNS(direction){
     Chat.log("LOG: Starting harvestRowNS()");
-    if(startingX != currentX){                              //If at the beginning of NEW row, testing using startingX rather than startingZ
+    if(startingX != currentX){                              //If at the beginning of NEW row
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
         newStartingZ = currentZ;
         newAnchorZ_NS = newStartingZ + treeWidth;
@@ -111,7 +111,7 @@ function harvestRowNS(direction){
 //Function to harvest an entire row of farm, from South to North
 function harvestRowSN(direction){
     Chat.log("LOG: Starting harvestRowSN()");
-    if(startingZ != currentZ){                              //If at the beginning of NEW row
+    if(startingX != currentX){                              //If at the beginning of NEW row
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
         newStartingZ = currentZ;
         newAnchorZ_SN = newStartingZ - treeWidth;
@@ -195,14 +195,20 @@ function nextRowWE(direction){
 //Script start
 if(rowDirection == 0 && turnDirection == 90){               //If farm north->south and turns west
     //Repeat for entire length of farm
-    while(currentX > startingX - farmLength){
+    while(currentX > startingX - farmLength + treeWidth + 1){
         Chat.log("LOG: Starting North-South, with West turns!");
         reverseRowDirection = rowDirection;
         reverseRowDirection += 180;
         harvestRowNS(rowDirection);
-        nextRowEW(turnDirection);
+        if(currentX > startingX - farmLength + treeWidth + 1){  //Stops bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowEW(turnDirection);
+        }
         harvestRowSN(reverseRowDirection);
-        nextRowEW(turnDirection);
+        if(currentX > startingX - farmLength + treeWidth + 1){  //Stops bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowEW(turnDirection);
+        }
     }
     Chat.log("LOG: Script completed successfully!");
 } else if(rowDirection == 180 && turnDirection == 270){     //If farm south->north, turn west
