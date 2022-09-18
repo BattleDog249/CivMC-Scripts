@@ -15,8 +15,8 @@ currentZ = Player.getPlayer().getZ();
 treeWidth = 4;
 
 //Variable used to calculate distance to stop in front of tree
-anchorZ_NS = startingZ + treeWidth;
-anchorZ_SN = startingZ - treeWidth;
+anchorZ_NS = startingZ + treeWidth + 0.35;
+anchorZ_SN = startingZ - treeWidth - 0.35;
 
 //Variable used to calculate distance to stop in front of first tree of next row
 anchorX_EW = currentX - treeWidth;
