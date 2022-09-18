@@ -15,8 +15,8 @@ currentZ = Player.getPlayer().getZ();
 treeWidth = 4;
 
 //Variable used to calculate distance to stop in front of tree
-anchorZ_NS = startingZ + treeWidth + 0.35;
-anchorZ_SN = startingZ - treeWidth - 0.35;
+anchorZ_NS = startingZ + treeWidth //+ 0.35;
+anchorZ_SN = startingZ - treeWidth //- 0.35;
 
 //Variable used to calculate distance to stop in front of first tree of next row
 anchorX_EW = currentX - treeWidth;
@@ -79,7 +79,7 @@ function chopTree(direction){
 //Function to harvest an entire row of farm, from North to South
 function harvestRowNS(direction){
     Chat.log("LOG: Starting harvestRowNS()");
-    if(startingZ != currentZ){                              //If at the beginning of NEW row
+    if(startingX != currentX){                              //If at the beginning of NEW row, testing using startingX rather than startingZ
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
         newStartingZ = currentZ;
         newAnchorZ_NS = newStartingZ + treeWidth;
