@@ -37,11 +37,11 @@ treeMaxHeight = 2;
 
 //Set to integer of cardinal direction when facing first tree from lodestone
 //South: 0, West: 90, North: 180, East: 270
-rowDirection = 0;
+rowDirection = 180;
 
 //Set to integer of cardinal direction of the first change of direction of tree farm
 //South: 0, West: 90, North: 180, East: 270
-turnDirection = 270;
+turnDirection = 90;
 
 
 
@@ -226,7 +226,7 @@ if (rowDirection == 0 && turnDirection == 90) {               //Farm north->sout
     }
     Chat.log("LOG: Script completed successfully!");
 }
-else if (rowDirection == 0 && turnDirection == 270) {     //Farm north->south, turn east UNTESTED
+else if (rowDirection == 0 && turnDirection == 270) {     //Farm north->south, turn east
     Chat.log("LOG: Starting North-South, with East turns!");
     while (currentX < startingX + farmLength - treeWidth - 1) {
         reverseRowDirection = rowDirection;
@@ -245,7 +245,23 @@ else if (rowDirection == 0 && turnDirection == 270) {     //Farm north->south, t
     Chat.log("LOG: Script completed successfully!");
 }
 else if (rowDirection == 180 && turnDirection == 90) {       //Farm south->north, turn west UNTESTED
-
+    //Repeat for entire length of farm
+    while (currentX > startingX - farmLength + treeWidth + 1) {
+        Chat.log("LOG: Starting South-North, with West turns!");
+        reverseRowDirection = rowDirection;
+        reverseRowDirection -= 180;
+        harvestRowSN(rowDirection);
+        if (currentX > startingX - farmLength + treeWidth + 1) {  //Stop bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowEW(turnDirection);
+        }
+        harvestRowNS(reverseRowDirection);
+        if (currentX > startingX - farmLength + treeWidth + 1) {  //Stop bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowEW(turnDirection);
+        }
+    }
+    Chat.log("LOG: Script completed successfully!");
 }
 else if (rowDirection == 180 && turnDirection == 270) {     //Farm south->north, turn east UNTESTED
 
