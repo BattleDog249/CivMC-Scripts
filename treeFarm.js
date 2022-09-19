@@ -11,12 +11,12 @@ startingZ = Player.getPlayer().getZ();
 currentX = Player.getPlayer().getX();
 currentZ = Player.getPlayer().getZ();
 
-//Set distance apart of each tree
+//Variable used to set the distance apart of each tree
 treeWidth = 4;
 
 //Variable used to calculate distance to stop in front of tree
-anchorZ_NS = startingZ + treeWidth //+ 0.35;
-anchorZ_SN = startingZ - treeWidth //- 0.35;
+anchorZ_NS = startingZ + treeWidth;
+anchorZ_SN = startingZ - treeWidth;
 
 //Variable used to calculate distance to stop in front of first tree of next row
 anchorX_EW = currentX - treeWidth;
@@ -37,21 +37,19 @@ treeMaxHeight = 2;
 
 //Set to integer of cardinal direction when facing first tree from lodestone
 //South: 0, West: 90, North: 180, East: 270
-rowDirection = 0;
+rowDirection = 180;
 
 //Set to integer of cardinal direction of the first change of direction of tree farm
 //South: 0, West: 90, North: 180, East: 270
-turnDirection = 90;
+turnDirection = 270;
 
 
 
 //Function to walk row and break potential leaves
 function walkRow(direction){
-    //Chat.log("LOG: Starting walkRow()");
     Player.getPlayer().lookAt(direction, 0);                //Looks in correct direction
     KeyBind.keyBind('key.forward', true);                   //Begin moving forward
     KeyBind.keyBind('key.attack', true);                    //Begin breaking leaves between trees
-    //Chat.log("LOG: Finished walkRow()");
 }
 
 //Function to harvest a single tree
@@ -66,7 +64,7 @@ function chopTree(direction){
     Client.waitTick(breakSpeed);                            //Chop for amount of time it takes to break log with selected tool
     KeyBind.keyBind('key.attack', false);                   //Stop chopping to walk forward under tree
     KeyBind.keyBind('key.forward', true);                   //Start walking under tree
-    Client.waitTick(3);                                     //Should be time it takes in ticks to walk 1 block; not sure exact value rn
+    Client.waitTick(3);                                     //Should be time it takes in ticks to walk 1 block; not sure exact value
     KeyBind.keyBind('key.forward', false);                  //Stop under tree
     Player.getPlayer().lookAt(direction, -90);              //Look straight up
     KeyBind.keyBind('key.attack', true);                    //Begin chopping rest of tree
@@ -176,14 +174,30 @@ function nextRowEW(direction){
 //Function to move to next row and harvest the first tree, from West to East UNTESTED
 function nextRowWE(direction){
     Chat.log("LOG: Starting nextRowWE()");
-    while((currentX < (startingX + treeWidth + 1)) == true){
-        currentX = Player.getPlayer().getX();               //Acquires current X coordinate
-        walkRow(direction);                                 //Call walkRow function
-        if(currentX >= anchorX_WE){                         //If at beginning of first tree in row, start chopping
-            chopTree(direction);                            //Call chopTree function
-            anchorX_WE = currentX + treeWidth + 1;          //Used to calculate location of next tree
+    if (startingX != currentX) {
+        Chat.log("LOG: Detected 2nd+ row, assigning newStartingX!");
+        newStartingX = currentX;
+        newAnchorX_WE = newStartingX + treeWidth;
+        while((currentX < (newStartingX + treeWidth + 1)) == true){
+            currentX = Player.getPlayer().getX();               //Acquires current X coordinate
+            walkRow(direction);                                 //Call walkRow function
+            if(currentX >= newAnchorX_WE){                      //If at beginning of first tree in row, start chopping
+                chopTree(direction);                            //Call chopTree function
+                newAnchorX_WE = currentX + treeWidth + 1;       //Used to calculate location of next tree
+            }
+            Client.waitTick(1);                                 //Prevents crash
         }
-        Client.waitTick(1);                                 //Prevents crash
+    } else {
+        Chat.log("LOG: First nextRowWE() executing!");
+        while((currentX < (startingX + treeWidth + 1)) == true){
+            currentX = Player.getPlayer().getX();           //Acquires current X coordinate
+            walkRow(direction);                             //Call walkRow function
+            if(currentX >= anchorX_WE){                     //If at beginning of first tree in row, start chopping
+                chopTree(direction);                        //Call chopTree function
+                anchorX_WE = currentX + treeWidth + 1;      //Used to calculate location of next tree
+            }
+            Client.waitTick(1);                             //Prevents crash
+        }
     }
     KeyBind.keyBind('key.forward', false);
     KeyBind.keyBind('key.attack', false);
@@ -193,32 +207,94 @@ function nextRowWE(direction){
 
 
 //Script start
-if(rowDirection == 0 && turnDirection == 90){               //If farm north->south and turns west
+if (rowDirection == 0 && turnDirection == 90) {                     //Farm north->south and turn west
+    Chat.log("LOG: Starting North-South, with West turns!");
     //Repeat for entire length of farm
-    while(currentX > startingX - farmLength + treeWidth + 1){
-        Chat.log("LOG: Starting North-South, with West turns!");
+    while (currentX > startingX - farmLength + treeWidth + 1) {
         reverseRowDirection = rowDirection;
         reverseRowDirection += 180;
         harvestRowNS(rowDirection);
-        if(currentX > startingX - farmLength + treeWidth + 1){  //Stops bot from continuing at end of farm
+        if (currentX > startingX - farmLength + treeWidth + 1) {    //Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowEW(turnDirection);
         }
         harvestRowSN(reverseRowDirection);
-        if(currentX > startingX - farmLength + treeWidth + 1){  //Stops bot from continuing at end of farm
+        if (currentX > startingX - farmLength + treeWidth + 1) {    //Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowEW(turnDirection);
         }
     }
     Chat.log("LOG: Script completed successfully!");
-} else if(rowDirection == 180 && turnDirection == 270){     //If farm south->north, turn west
-    Chat.log("LOG: Starting South-North, with West turns!");
-    harvestRowSN(rowDirection);
-    nextRowWE(turnDirection);
-    reverseRowDirection = rowDirection;
-    reverseRowDirection += 180;
-    harvestRowNS(reverseRowDirection);
+}
+else if (rowDirection == 0 && turnDirection == 270) {               //Farm north->south, turn east
+    Chat.log("LOG: Starting North-South, with East turns!");
+    //Repeat for entire length of farm
+    while (currentX < startingX + farmLength - treeWidth - 1) {
+        reverseRowDirection = rowDirection;
+        reverseRowDirection += 180;
+        harvestRowNS(rowDirection);
+        if (currentX < startingX + farmLength - treeWidth - 1) {    //Stop bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowWE(turnDirection);
+        }
+        harvestRowSN(reverseRowDirection);
+        if (currentX < startingX + farmLength - treeWidth - 1) {    //Stop bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowWE(turnDirection);
+        }
+    }
     Chat.log("LOG: Script completed successfully!");
-} else {
+}
+else if (rowDirection == 180 && turnDirection == 90) {              //Farm south->north, turn west
+    Chat.log("LOG: Starting South-North, with West turns!");
+    //Repeat for entire length of farm
+    while (currentX > startingX - farmLength + treeWidth + 1) {
+        reverseRowDirection = rowDirection;
+        reverseRowDirection -= 180;
+        harvestRowSN(rowDirection);
+        if (currentX > startingX - farmLength + treeWidth + 1) {    //Stop bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowEW(turnDirection);
+        }
+        harvestRowNS(reverseRowDirection);
+        if (currentX > startingX - farmLength + treeWidth + 1) {    //Stop bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowEW(turnDirection);
+        }
+    }
+    Chat.log("LOG: Script completed successfully!");
+}
+else if (rowDirection == 180 && turnDirection == 270) {             //Farm south->north, turn east UNTESTED
+    Chat.log("LOG: Starting South-North, with East turns!");
+    //Repeat for entire length of farm
+    while (currentX < startingX + farmLength - treeWidth - 1) {
+        reverseRowDirection = rowDirection;
+        reverseRowDirection -= 180;
+        harvestRowSN(rowDirection);
+        if (currentX < startingX + farmLength - treeWidth - 1) {    //Stop bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowWE(turnDirection);
+        }
+        harvestRowNS(reverseRowDirection);
+        if (currentX < startingX + farmLength - treeWidth - 1) {    //Stop bot from continuing at end of farm
+            Chat.log("LOG: Not at end of farm, continuing!");
+            nextRowWE(turnDirection);
+        }
+    }
+    Chat.log("LOG: Script completed successfully!");
+}
+else if (rowDirection == 90 && turnDirection == 0) {        //Farm east->west, turn south UNTESTED
+
+}
+else if (rowDirection == 90 && turnDirection == 180) {      //Farm east->west, turn north UNTESTED
+
+}
+else if (rowDirection == 270 && turnDirection == 0) {       //Farm west->east, turn south UNTESTED
+
+}
+else if (rowDirection == 270 && turnDirection == 180) {     //Farm west->east, turn north UNTESTED
+
+}
+else {
     Chat.log("ERROR: Invalid rowDirection and/or turnDirection!");
 }
