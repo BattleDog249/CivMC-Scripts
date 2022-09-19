@@ -46,14 +46,14 @@ turnDirection = 270;
 
 
 //Function to walk row and break potential leaves
-function walkRow(direction){
+function walkRow(direction) {
     Player.getPlayer().lookAt(direction, 0);                //Looks in correct direction
     KeyBind.keyBind('key.forward', true);                   //Begin moving forward
     KeyBind.keyBind('key.attack', true);                    //Begin breaking leaves between trees
 }
 
 //Function to harvest a single tree
-function chopTree(direction){
+function chopTree(direction) {
     Chat.log("LOG: Starting chopTree()");
     KeyBind.keyBind('key.forward', false);                  //Stop walking to chop
     Player.getPlayer().lookAt(direction, 75);               //Look down at bottom log block
@@ -75,7 +75,7 @@ function chopTree(direction){
 }
 
 //Function to harvest an entire row of farm, from North to South
-function harvestRowNS(direction){
+function harvestRowNS(direction) {
     Chat.log("LOG: Starting harvestRowNS()");
     if(startingX != currentX){                              //If at the beginning of NEW row
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
@@ -107,7 +107,7 @@ function harvestRowNS(direction){
 }
 
 //Function to harvest an entire row of farm, from South to North
-function harvestRowSN(direction){
+function harvestRowSN(direction) {
     Chat.log("LOG: Starting harvestRowSN()");
     if(startingX != currentX){                              //If at the beginning of NEW row
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
@@ -139,7 +139,7 @@ function harvestRowSN(direction){
 }
 
 //Function to move to next row and harvest the first tree, from East to West
-function nextRowEW(direction){
+function nextRowEW(direction) {
     Chat.log("LOG: Starting nextRowEW()");
     if(startingX != currentX){                              //If at 2nd+ turn
         Chat.log("LOG: Detected 2nd+ row, assigning newStartingX!");
@@ -171,8 +171,8 @@ function nextRowEW(direction){
     Chat.log("LOG: Finished nextRowEW()");
 }
 
-//Function to move to next row and harvest the first tree, from West to East UNTESTED
-function nextRowWE(direction){
+//Function to move to next row and harvest the first tree, from West to East
+function nextRowWE(direction) {
     Chat.log("LOG: Starting nextRowWE()");
     if (startingX != currentX) {
         Chat.log("LOG: Detected 2nd+ row, assigning newStartingX!");
@@ -204,13 +204,32 @@ function nextRowWE(direction){
     Chat.log("LOG: Finished nextRowWE()");
 }
 
+//Function to harvest an entire row of farm, from East to West
+function harvestRowEW(direction) {
+
+}
+
+//Function to harvest an entire row of farm, from West to East
+function harvestRowWE(direction) {
+
+}
+
+//Function to move to next row and harvest the first tree, from North to South
+function nextRowNS(direction) {
+
+}
+
+//Function to move to next row and harvest the first tree, from South to North
+function nextRowSN(direction) {
+
+}
+
 
 
 //Script start
 if (rowDirection == 0 && turnDirection == 90) {                     //Farm north->south and turn west
     Chat.log("LOG: Starting North-South, with West turns!");
-    //Repeat for entire length of farm
-    while (currentX > startingX - farmLength + treeWidth + 1) {
+    while (currentX > startingX - farmLength + treeWidth + 1) {     //Loop for length of farm
         reverseRowDirection = rowDirection;
         reverseRowDirection += 180;
         harvestRowNS(rowDirection);
@@ -228,8 +247,7 @@ if (rowDirection == 0 && turnDirection == 90) {                     //Farm north
 }
 else if (rowDirection == 0 && turnDirection == 270) {               //Farm north->south, turn east
     Chat.log("LOG: Starting North-South, with East turns!");
-    //Repeat for entire length of farm
-    while (currentX < startingX + farmLength - treeWidth - 1) {
+    while (currentX < startingX + farmLength - treeWidth - 1) {     //Loop for length of farm
         reverseRowDirection = rowDirection;
         reverseRowDirection += 180;
         harvestRowNS(rowDirection);
@@ -247,8 +265,7 @@ else if (rowDirection == 0 && turnDirection == 270) {               //Farm north
 }
 else if (rowDirection == 180 && turnDirection == 90) {              //Farm south->north, turn west
     Chat.log("LOG: Starting South-North, with West turns!");
-    //Repeat for entire length of farm
-    while (currentX > startingX - farmLength + treeWidth + 1) {
+    while (currentX > startingX - farmLength + treeWidth + 1) {     //Loop for length of farm
         reverseRowDirection = rowDirection;
         reverseRowDirection -= 180;
         harvestRowSN(rowDirection);
@@ -264,10 +281,9 @@ else if (rowDirection == 180 && turnDirection == 90) {              //Farm south
     }
     Chat.log("LOG: Script completed successfully!");
 }
-else if (rowDirection == 180 && turnDirection == 270) {             //Farm south->north, turn east UNTESTED
+else if (rowDirection == 180 && turnDirection == 270) {             //Farm south->north, turn east
     Chat.log("LOG: Starting South-North, with East turns!");
-    //Repeat for entire length of farm
-    while (currentX < startingX + farmLength - treeWidth - 1) {
+    while (currentX < startingX + farmLength - treeWidth - 1) {     //Loop for length of farm
         reverseRowDirection = rowDirection;
         reverseRowDirection -= 180;
         harvestRowSN(rowDirection);
@@ -283,17 +299,17 @@ else if (rowDirection == 180 && turnDirection == 270) {             //Farm south
     }
     Chat.log("LOG: Script completed successfully!");
 }
-else if (rowDirection == 90 && turnDirection == 0) {        //Farm east->west, turn south UNTESTED
-
+else if (rowDirection == 90 && turnDirection == 0) {                //Farm east->west, turn south UNTESTED
+    Chat.log("LOG: Starting East-West, with South turns!");
 }
-else if (rowDirection == 90 && turnDirection == 180) {      //Farm east->west, turn north UNTESTED
-
+else if (rowDirection == 90 && turnDirection == 180) {              //Farm east->west, turn north UNTESTED
+    Chat.log("LOG: Starting East-West, with North turns!");
 }
-else if (rowDirection == 270 && turnDirection == 0) {       //Farm west->east, turn south UNTESTED
-
+else if (rowDirection == 270 && turnDirection == 0) {               //Farm west->east, turn south UNTESTED
+    Chat.log("LOG: Starting West-East, with South turns!");
 }
-else if (rowDirection == 270 && turnDirection == 180) {     //Farm west->east, turn north UNTESTED
-
+else if (rowDirection == 270 && turnDirection == 180) {             //Farm west->east, turn north UNTESTED
+    Chat.log("LOG: Starting West-East, with North turns!");
 }
 else {
     Chat.log("ERROR: Invalid rowDirection and/or turnDirection!");
