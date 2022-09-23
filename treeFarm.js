@@ -26,27 +26,56 @@ anchorX_WE = currentX + treeWidth;
 breakSpeed = 20;
 
 //Variable used to set the farm length in blocks; length of farm on X axis
-farmLength = 16;
+farmLength = 11;
 
 //Variable used to set the farm width in blocks; length of farm on Z axis
-farmWidth = 16;
+farmWidth = 11;
 
 //Set maximum height of tree
 //Leave unchanged unless you know what's up
-treeMaxHeight = 2;
+treeMaxHeight = 6;
 
 //Set to integer of cardinal direction when facing first tree from lodestone
 //South: 0, West: 90, North: 180, East: 270
-rowDirection = 180;
+rowDirection = 0;
 
 //Set to integer of cardinal direction of the first change of direction of tree farm
 //South: 0, West: 90, North: 180, East: 270
-turnDirection = 270;
+turnDirection = 90;
 
-
+//Function that allows bot to center itself on block
+function centerSelf() {
+    pos = Player.getPlayer().getPos();
+    x = pos.x;
+    z = pos.z;
+    if (x < 0) {
+        tx = parseInt(x) - 0.5;
+    } else {
+        tx = parseInt(x) + 0.5;
+    }
+    if (z < 0) {
+        tz = parseInt(z) - 0.5;
+    } else {
+        tz = parseInt(z) + 0.5;
+    }
+    KeyBind.keyBind('key.forward', true);
+    while (true) {
+        Player.getPlayer().lookAt(tx, pos.y, tz);
+        pos = Player.getPlayer().getPos();
+        if (Math.abs(pos.x - tx) < 0.5 && Math.abs(pos.z - tz) < 0.5) {
+            KeyBind.keyBind('key.sneak', true);
+        }
+        if (Math.abs(pos.x - tx) < 0.075 && Math.abs(pos.z - tz) < 0.075) {
+            break
+        }
+        Client.waitTick();
+    }
+    KeyBind.keyBind('key.forward', false);
+    KeyBind.keyBind('key.sneak', false);
+}
 
 //Function to walk row and break potential leaves
-function walkRow(direction) {
+function walkRow(direction) {                                    
     Player.getPlayer().lookAt(direction, 0);                //Looks in correct direction
     KeyBind.keyBind('key.forward', true);                   //Begin moving forward
     KeyBind.keyBind('key.attack', true);                    //Begin breaking leaves between trees
@@ -66,6 +95,7 @@ function chopTree(direction) {
     KeyBind.keyBind('key.forward', true);                   //Start walking under tree
     Client.waitTick(3);                                     //Should be time it takes in ticks to walk 1 block; not sure exact value
     KeyBind.keyBind('key.forward', false);                  //Stop under tree
+    centerSelf();
     Player.getPlayer().lookAt(direction, -90);              //Look straight up
     KeyBind.keyBind('key.attack', true);                    //Begin chopping rest of tree
     Client.waitTick(breakSpeed * treeMaxHeight);            //Time it takes to chop maximum height tree
@@ -77,6 +107,7 @@ function chopTree(direction) {
 //Function to harvest an entire row of farm, from North to South
 function harvestRowNS(direction) {
     Chat.log("LOG: Starting harvestRowNS()");
+    centerSelf();                                           //Stands in exact center of block
     if(startingX != currentX){                              //If at the beginning of NEW row
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
         newStartingZ = currentZ;
@@ -109,6 +140,7 @@ function harvestRowNS(direction) {
 //Function to harvest an entire row of farm, from South to North
 function harvestRowSN(direction) {
     Chat.log("LOG: Starting harvestRowSN()");
+    centerSelf();                                           //Stands in exact center of block
     if(startingX != currentX){                              //If at the beginning of NEW row
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
         newStartingZ = currentZ;
@@ -141,6 +173,7 @@ function harvestRowSN(direction) {
 //Function to move to next row and harvest the first tree, from East to West
 function nextRowEW(direction) {
     Chat.log("LOG: Starting nextRowEW()");
+    centerSelf();                                           //Stands in exact center of block
     if(startingX != currentX){                              //If at 2nd+ turn
         Chat.log("LOG: Detected 2nd+ row, assigning newStartingX!");
         newStartingX = currentX;
@@ -174,6 +207,7 @@ function nextRowEW(direction) {
 //Function to move to next row and harvest the first tree, from West to East
 function nextRowWE(direction) {
     Chat.log("LOG: Starting nextRowWE()");
+    centerSelf();                                           //Stands in exact center of block
     if (startingX != currentX) {
         Chat.log("LOG: Detected 2nd+ row, assigning newStartingX!");
         newStartingX = currentX;
