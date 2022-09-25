@@ -398,7 +398,7 @@ else if (rowDirection == 90 && turnDirection == 0) {                // Farm east
             nextRowNS(turnDirection);
         }
         harvestRowEW(reverseRowDirection);
-        if (currentZ < startingZ + farmWidth - treeWidth - 1) {    // Stop bot from continuing at end of farm
+        if (currentZ < startingZ + farmWidth - treeWidth - 1) {     // Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowNS(turnDirection);
         }
@@ -416,7 +416,7 @@ else if (rowDirection == 90 && turnDirection == 180) {              // Farm east
             nextRowSN(turnDirection);
         }
         harvestRowEW(reverseRowDirection);
-        if (currentZ > startingZ - farmWidth + treeWidth + 1) {    // Stop bot from continuing at end of farm
+        if (currentZ > startingZ - farmWidth + treeWidth + 1) {     // Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowSN(turnDirection);
         }
@@ -434,7 +434,7 @@ else if (rowDirection == 270 && turnDirection == 0) {               // Farm west
             nextRowNS(turnDirection);
         }
         harvestRowWE(reverseRowDirection);
-        if (currentZ < startingZ + farmWidth - treeWidth - 1) {    // Stop bot from continuing at end of farm
+        if (currentZ < startingZ + farmWidth - treeWidth - 1) {     // Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowNS(turnDirection);
         }
@@ -452,7 +452,7 @@ else if (rowDirection == 270 && turnDirection == 180) {             // Farm west
             nextRowSN(turnDirection);
         }
         harvestRowWE(reverseRowDirection);
-        if (currentZ > startingZ - farmWidth + treeWidth + 1) {    // Stop bot from continuing at end of farm
+        if (currentZ > startingZ - farmWidth + treeWidth + 1) {     // Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowSN(turnDirection);
         }
