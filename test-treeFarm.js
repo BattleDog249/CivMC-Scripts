@@ -80,41 +80,63 @@ function pick(name, hotbar = null, dmg = -1) {
     return false;
 }
 
-// Function that allows bot to center itself on block
-function centerSelf() {
+// walks to the centre of the given x, z coordinate. assumes flat y level
+// if x, z is ommitted then centres the player on the current block
+// precise=true attemts to walk to the exact coordinate rather than the centre of the block
+
+function walkTo(x = null, z = null, precise = false, timeout = null) {
     pos = Player.getPlayer().getPos();
-    x = pos.x;
-    z = pos.z;
-    if (x < 0) {
-        tx = parseInt(x) - 0.5;
-    } else {
-        tx = parseInt(x) + 0.5;
+    if (x == null) {
+        x = pos.x;
     }
-    if (z < 0) {
-        tz = parseInt(z) - 0.5;
-    } else {
-        tz = parseInt(z) + 0.5;
+    if (z == null) {
+        z = pos.z;
     }
+    if (precise) {
+        tx = x;
+        tz = z;
+    } else {
+        if (x < 0) {
+            tx = parseInt(x) - 0.5;
+        } else {
+            tx = parseInt(x) + 0.5;
+        }
+        if (z < 0) {
+            tz = parseInt(z) - 0.5;
+        } else {
+            tz = parseInt(z) + 0.5;
+        }
+    }
+    Chat.log("walking to x: " + tx + ", z: " + tz);
     KeyBind.keyBind('key.forward', true);
+    timer = 0;
     while (true) {
         Player.getPlayer().lookAt(tx, pos.y, tz);
         pos = Player.getPlayer().getPos();
         if (Math.abs(pos.x - tx) < 0.5 && Math.abs(pos.z - tz) < 0.5) {
-            KeyBind.keyBind('key.sneak', true);
+            KeyBind.keyBind('key.sneak', false);
         }
         if (Math.abs(pos.x - tx) < 0.075 && Math.abs(pos.z - tz) < 0.075) {
             break;
         }
         Client.waitTick();
+        timer += 1;
+        if (timeout && timer > timeout) {
+            Chat.log("walkTo timed out");
+            KeyBind.keyBind('key.forward', false);
+            KeyBind.keyBind('key.sneak', false);
+            return false;
+        }
     }
     KeyBind.keyBind('key.forward', false);
     KeyBind.keyBind('key.sneak', false);
-    Client.waitTick(10);
+    Client.waitTick(5);
     pos = Player.getPlayer().getPos();
     Player.getPlayer().getRaw().method_5814(tx, pos.y, tz);
+    return true;
 }
 
-centerSelf();
+walkTo();
 
 // Variables used to locate bot
 startingX = Player.getPlayer().getX();
@@ -175,7 +197,7 @@ function chopTree(direction) {
     KeyBind.keyBind('key.forward', true);                   // Start walking under tree
     Client.waitTick(3);                                     // Should be time it takes in ticks to walk 1 block; not sure exact value
     KeyBind.keyBind('key.forward', false);                  // Stop under tree
-    centerSelf();                                           // Center bot exactly under tree
+    walkTo();                                           // Center bot exactly under tree
     replant(direction);                                     // Replant sapling
     pick(logTool);                                          // Equip tool used to break logs
     Player.getPlayer().lookAt(direction, -90);              // Look straight up
@@ -189,7 +211,7 @@ function chopTree(direction) {
 // Function to harvest an entire row of farm, from North to South
 function harvestRowNS(direction) {
     Chat.log("LOG: Starting harvestRowNS()");
-    centerSelf();                                           // Stands in exact center of block
+    walkTo();                                           // Stands in exact center of block
     chopLeaves(direction);                                  // Break leaves between rows
     if (startingX != currentX) {                            // If at the beginning of NEW row
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
@@ -223,7 +245,7 @@ function harvestRowNS(direction) {
 // Function to harvest an entire row of farm, from South to North
 function harvestRowSN(direction) {
     Chat.log("LOG: Starting harvestRowSN()");
-    centerSelf();                                           // Stands in exact center of block
+    walkTo();                                           // Stands in exact center of block
     chopLeaves(direction);                                  // Break leaves between rows
     if (startingX != currentX) {                            // If at the beginning of NEW row
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
@@ -257,7 +279,7 @@ function harvestRowSN(direction) {
 // Function to move to next row and harvest the first tree, from East to West
 function nextRowEW(direction) {
     Chat.log("LOG: Starting nextRowEW()");
-    centerSelf();                                           // Stands in exact center of block
+    walkTo();                                           // Stands in exact center of block
     chopLeaves(direction);                                  // Break leaves between rows
     if (startingX != currentX) {                            // If at 2nd+ turn
         Chat.log("LOG: Detected 2nd+ row, assigning newStartingX!");
@@ -292,7 +314,7 @@ function nextRowEW(direction) {
 // Function to move to next row and harvest the first tree, from West to East
 function nextRowWE(direction) {
     Chat.log("LOG: Starting nextRowWE()");
-    centerSelf();                                           // Stands in exact center of block
+    walkTo();                                           // Stands in exact center of block
     chopLeaves(direction);                                  // Break leaves between rows
     if (startingX != currentX) {
         Chat.log("LOG: Detected 2nd+ row, assigning newStartingX!");
