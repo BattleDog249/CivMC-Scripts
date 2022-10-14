@@ -11,7 +11,7 @@ treeWidth = 4;
 
 // Variable used to set time in ticks it takes to break a log with selected unenchanted tool + 5 for buffer
 // Nothing: 65, Wooden: 35, Stone: 20, Iron: 15, Diamond: 13, Netherite: 12, Gold: 10
-breakTime = 10;
+breakTime = 15;
 
 // Variable used to set time in ticks it takes to break a leaf block with selected unenchanted tool + 7 for buffer
 leafBreakTime = 13;
@@ -40,16 +40,45 @@ rowDirection = 0;
 // South: 0, West: 90, North: 180, East: 270
 turnDirection = 90;
 
-// WIP code for automated tool selection and replanting saplings
-/*
-logTool = "minecraft:diamond_axe";
+// Set to tools to be used in harvest
+logTool = "minecraft:iron_axe";
 leafTool = "minecraft:stick"
 
-toolSlot = 0;
+// Set to sapling type to replant
+sapling = "minecraft:oak_sapling";
 
-sapling = "";
-saplingSlot = 1;
-*/
+// Function for equipping a given item
+function pick(name, hotbar = null, dmg = -1) {
+    inv = Player.openInventory();
+    slots = inv.getMap();
+    
+    if (hotbar == null) {
+        hotbar = inv.getSelectedHotbarSlotIndex();
+    }
+    
+    slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];
+    item = inv.getSlot(slot);
+    dura = item.getMaxDamage() - item.getDamage();
+
+    if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {
+        inv.close();
+        return true;
+    }
+    
+    for (slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
+        let item = inv.getSlot(slot);
+        if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {
+            //Chat.log(`Found ${item.getItemId()} at slot ${slot}.`);
+            inv.swap(slot, slots["hotbar"][hotbar]);
+            Time.sleep(250);
+            inv.setSelectedHotbarSlotIndex(parseInt(slot));
+            inv.close();
+            return true;
+        }
+    }
+    inv.close();
+    return false;
+}
 
 // Function that allows bot to center itself on block
 function centerSelf() {
@@ -107,21 +136,21 @@ function walkRow(direction) {
     KeyBind.keyBind('key.forward', true);                   // Begin moving forward
 }
 
-/*
-function replant() {
+// Function to plant a sapling
+function replant(direction) {
     Player.getPlayer().lookAt(direction, 90);               // Look straight down
-    //pick(sapling, saplingSlot);                           // Probably old function
-    //Look down
-    //Place sapling
-    //Look back up
-    //continue
-    
+    pick(sapling);                                          // Equip sapling to replant
+    Client.waitTick();
+    KeyBind.keyBind('key.use', true);
+    KeyBind.keyBind('key.use', false);
+    Client.waitTick();
+    Player.getPlayer().lookAt(direction, 0);
 }
-*/
 
 // Function to break potential leaves before walking
 function chopLeaves(direction) {
     Player.getPlayer().lookAt(direction, 0);                // Looks in correct direction
+    pick(leafTool);                                         // Equip tool used to break leaves
     KeyBind.keyBind('key.attack', true);                    // Begin breaking leaves between trees
     Client.waitTick(leafBreakTime * treeWidth);             // Wait to break all leaves between trees before walking; prevents weird glitches on CivMC
     KeyBind.keyBind('key.attack', false);                   // Stop breaking leaves between trees
@@ -131,6 +160,7 @@ function chopLeaves(direction) {
 function chopTree(direction) {
     //Chat.log("LOG: Start - chopTree()");
     KeyBind.keyBind('key.forward', false);                  // Stop walking to begin chopping
+    pick(logTool);                                          // Equip tool used to break logs
     Client.waitTick(recoveryBuffer);                        // Buffer to successfully break next log
     Player.getPlayer().lookAt(direction, 75);               // Look down at bottom log
     KeyBind.keyBind('key.attack', true);                    // Beginning chopping bottom log
@@ -146,6 +176,8 @@ function chopTree(direction) {
     Client.waitTick(3);                                     // Should be time it takes in ticks to walk 1 block; not sure exact value
     KeyBind.keyBind('key.forward', false);                  // Stop under tree
     centerSelf();                                           // Center bot exactly under tree
+    replant(direction);                                     // Replant sapling
+    pick(logTool);                                          // Equip tool used to break logs
     Player.getPlayer().lookAt(direction, -90);              // Look straight up
     KeyBind.keyBind('key.attack', true);                    // Begin chopping rest of tree
     Client.waitTick(breakTime * treeHeight + breakTime);    // Time it takes to chop maximum height tree
@@ -398,7 +430,7 @@ else if (rowDirection == 90 && turnDirection == 0) {                // Farm east
             nextRowNS(turnDirection);
         }
         harvestRowEW(reverseRowDirection);
-        if (currentZ < startingZ + farmWidth - treeWidth - 1) {    // Stop bot from continuing at end of farm
+        if (currentZ < startingZ + farmWidth - treeWidth - 1) {     // Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowNS(turnDirection);
         }
@@ -416,7 +448,7 @@ else if (rowDirection == 90 && turnDirection == 180) {              // Farm east
             nextRowSN(turnDirection);
         }
         harvestRowEW(reverseRowDirection);
-        if (currentZ > startingZ - farmWidth + treeWidth + 1) {    // Stop bot from continuing at end of farm
+        if (currentZ > startingZ - farmWidth + treeWidth + 1) {     // Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowSN(turnDirection);
         }
@@ -434,7 +466,7 @@ else if (rowDirection == 270 && turnDirection == 0) {               // Farm west
             nextRowNS(turnDirection);
         }
         harvestRowWE(reverseRowDirection);
-        if (currentZ < startingZ + farmWidth - treeWidth - 1) {    // Stop bot from continuing at end of farm
+        if (currentZ < startingZ + farmWidth - treeWidth - 1) {     // Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowNS(turnDirection);
         }
@@ -452,7 +484,7 @@ else if (rowDirection == 270 && turnDirection == 180) {             // Farm west
             nextRowSN(turnDirection);
         }
         harvestRowWE(reverseRowDirection);
-        if (currentZ > startingZ - farmWidth + treeWidth + 1) {    // Stop bot from continuing at end of farm
+        if (currentZ > startingZ - farmWidth + treeWidth + 1) {     // Stop bot from continuing at end of farm
             Chat.log("LOG: Not at end of farm, continuing!");
             nextRowSN(turnDirection);
         }
