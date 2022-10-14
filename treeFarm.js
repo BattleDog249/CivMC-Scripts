@@ -47,28 +47,6 @@ leafTool = "minecraft:stick"
 // Set to sapling type to replant
 sapling = "minecraft:oak_sapling";
 
-function range(start, stop, step) {
-    if (typeof stop == 'undefined') {
-        stop = start;
-        start = 0;
-    }
-
-    if (typeof step == 'undefined') {
-        step = 1;
-    }
-
-    if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
-        return [];
-    }
-
-    var result = [];
-    for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
-        result.push(i);
-    }
-
-    return result;
-};
-
 // Function for equipping a given item
 function pick(name, hotbar = null, dmg = -1) {
     inv = Player.openInventory();
@@ -81,28 +59,19 @@ function pick(name, hotbar = null, dmg = -1) {
     slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];
     item = inv.getSlot(slot);
     dura = item.getMaxDamage() - item.getDamage();
-    if (item.getItemId() == name && (dmg == -1 || dura > dmg)) {
+
+    if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {
         inv.close();
         return true;
     }
     
-    for (i in range(9)) {
-        slot = slots["hotbar"][i];
-        item = inv.getSlot(slot);
-        dura = item.getMaxDamage() - item.getDamage();
-        if (item.getItemId() == name && (dmg == -1 || dura > dmg)) {
-            inv.setSelectedHotbarSlotIndex(parseInt(i));
-            inv.close();
-            return true;
-        }
-    }
-    for (slot in slots["main"]) {
-        item = inv.getSlot(slot);
-        dura = item.getMaxDamage() - item.getDamage();
-        if (item.getItemId() == name && (dmg == -1 || dura > dmg)) {
+    for (slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
+        let item = inv.getSlot(slot);
+        if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {
+            //Chat.log(`Found ${item.getItemId()} at slot ${slot}.`);
             inv.swap(slot, slots["hotbar"][hotbar]);
             Time.sleep(250);
-            inv.setSelectedHotbarSlotIndex(hotbar);
+            inv.setSelectedHotbarSlotIndex(parseInt(slot));
             inv.close();
             return true;
         }
