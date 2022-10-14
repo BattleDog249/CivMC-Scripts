@@ -32,13 +32,18 @@ farmWidth = 66;
 // The - 2 is to subtract the two bottom blocks already broken by the bot, so only change the first number if need be!
 treeHeight = 6 - 2;
 
+south = 0;
+west = 90;
+north = 180;
+east = 270;
+
 // Set to integer of cardinal direction when facing first tree from lodestone
 // South: 0, West: 90, North: 180, East: 270
-rowDirection = 0;
+rowDirection = south;
 
 // Set to integer of cardinal direction of the first change of direction of tree farm
 // South: 0, West: 90, North: 180, East: 270
-turnDirection = 90;
+turnDirection = west;
 
 // Set to tools to be used in harvest
 logTool = "minecraft:iron_axe";
@@ -139,23 +144,72 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
 walkTo();
 
 // Variables used to locate bot
-startingX = Player.getPlayer().getX();
-startingZ = Player.getPlayer().getZ();
+//startingX = Player.getPlayer().getX();
+//startingZ = Player.getPlayer().getZ();
 currentX = Player.getPlayer().getX();
 currentZ = Player.getPlayer().getZ();
 
 // Variable used to calculate distance to stop in front of tree
-anchorZ_NS = startingZ + treeWidth;
-anchorZ_SN = startingZ - treeWidth;
+//anchorZ_NS = startingZ + treeWidth;
+//anchorZ_SN = startingZ - treeWidth;
 
 // Variable used to calculate distance to stop in front of first tree of next row
-anchorX_EW = currentX - treeWidth;
-anchorX_WE = currentX + treeWidth;
+//anchorX_EW = currentX - treeWidth;
+//anchorX_WE = currentX + treeWidth;
 
-// Function to walk row
-function walkRow(direction) {                                    
+// Starting corner of the tree farm
+startX = -95;
+startZ = 4;
+
+// Opposite corner of the tree farm
+endX = -105;
+endZ = 14;
+
+if (rowDirection == south || rowDirection == north) {
+    if (startZ < endZ) {
+        hyaw = 0;
+        pyaw = 180;
+        tree = startZ + treeWidth;  //TESTING
+    } else {
+        hyaw = 180;
+        pyaw = 0;
+        tree = startZ - treeWidth;  //TESTING
+    }
+} else if (rowDirection == west || rowDirection == east) {
+    if (startX < endX) {
+        hyaw = 0;
+        pyaw = 180;
+        tree = startX + treeWidth;  //TESTING
+    } else {
+        hyaw = 180;
+        pyaw = 0;
+        tree = startX - treeWidth;  //TESTING
+    }
+}
+
+// Function to break potential leaves before walking
+function chopLeaves(direction) {
     Player.getPlayer().lookAt(direction, 0);                // Looks in correct direction
-    KeyBind.keyBind('key.forward', true);                   // Begin moving forward
+    pick(leafTool);                                         // Equip tool used to break leaves
+    KeyBind.keyBind('key.attack', true);                    // Begin breaking leaves between trees
+    Client.waitTick(leafBreakTime * treeWidth);             // Wait to break all leaves between trees before walking; prevents weird glitches on CivMC
+    KeyBind.keyBind('key.attack', false);                   // Stop breaking leaves between trees
+}
+
+// Function to walk to next tree
+function nextTree(direction) {                                    
+    //Player.getPlayer().lookAt(direction, 0);                // Looks in correct direction
+    if (direction == south) {
+        walkTo(direction, currentZ + treeWidth);
+    } else if (direction == west) {
+        walkTo(currentX - treeWidth, direction);
+    } else if (direction == north) {
+        walkTo(direction, currentZ - treeWidth);
+    } else if (direction == east) {
+        walkTo(currentX + treeWidth, direction);
+    } else {
+        Chat.log("ERROR: Broken walkRow() function!");
+    }
 }
 
 // Function to plant a sapling
@@ -169,19 +223,10 @@ function replant(direction) {
     Player.getPlayer().lookAt(direction, 0);
 }
 
-// Function to break potential leaves before walking
-function chopLeaves(direction) {
-    Player.getPlayer().lookAt(direction, 0);                // Looks in correct direction
-    pick(leafTool);                                         // Equip tool used to break leaves
-    KeyBind.keyBind('key.attack', true);                    // Begin breaking leaves between trees
-    Client.waitTick(leafBreakTime * treeWidth);             // Wait to break all leaves between trees before walking; prevents weird glitches on CivMC
-    KeyBind.keyBind('key.attack', false);                   // Stop breaking leaves between trees
-}
-
 // Function to harvest a single tree
 function chopTree(direction) {
     //Chat.log("LOG: Start - chopTree()");
-    KeyBind.keyBind('key.forward', false);                  // Stop walking to begin chopping
+    //KeyBind.keyBind('key.forward', false);                  // Stop walking to begin chopping
     pick(logTool);                                          // Equip tool used to break logs
     Client.waitTick(recoveryBuffer);                        // Buffer to successfully break next log
     Player.getPlayer().lookAt(direction, 75);               // Look down at bottom log
@@ -194,17 +239,25 @@ function chopTree(direction) {
     Client.waitTick(breakTime);                             // Chop for amount of time it takes to break log with selected axe
     KeyBind.keyBind('key.attack', false);                   // Stop chopping to walk forward under tree
     Client.waitTick(recoveryBuffer);                        // Buffer to successfully break next log; potential fix for random trees not getting fully chopped?
-    KeyBind.keyBind('key.forward', true);                   // Start walking under tree
-    Client.waitTick(3);                                     // Should be time it takes in ticks to walk 1 block; not sure exact value
-    KeyBind.keyBind('key.forward', false);                  // Stop under tree
-    walkTo();                                           // Center bot exactly under tree
-    replant(direction);                                     // Replant sapling
-    pick(logTool);                                          // Equip tool used to break logs
+    //Walk directly under tree
+    if (direction == south) {
+        walkTo(direction, currentZ + 1);
+    } else if (direction == west) {
+        walkTo(currentX - 1, direction);
+    } else if (direction == north) {
+        walkTo(direction, currentZ - 1);
+    } else if (direction == east) {
+        walkTo(currentX + 1, direction);
+    } else {
+        Chat.log("ERROR: Broken chopTree() function!");
+    }
+    //replant(direction);                                     // Replant sapling
+    //pick(logTool);                                          // Equip tool used to break logs
     Player.getPlayer().lookAt(direction, -90);              // Look straight up
     KeyBind.keyBind('key.attack', true);                    // Begin chopping rest of tree
     Client.waitTick(breakTime * treeHeight + breakTime);    // Time it takes to chop maximum height tree
     KeyBind.keyBind('key.attack', false);                   // Stop chopping tree
-    chopLeaves(direction);                                  // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+    //chopLeaves(direction);                                  // Break leaves in front of next tree, and waits just long enough to collect falling logs too
     //Chat.log("LOG: End - chopTree()");
 }
 
@@ -213,6 +266,23 @@ function harvestRowNS(direction) {
     Chat.log("LOG: Starting harvestRowNS()");
     walkTo();                                           // Stands in exact center of block
     chopLeaves(direction);                                  // Break leaves between rows
+    if (direction == south) {
+        for (i = currentZ; i <= endZ; i += treeWidth) {     //TESTING
+            nextTree(direction);
+            chopTree(direction);
+            replant(direction);
+            chopLeaves(direction);
+        }
+        walkTo(direction, currentZ + 1);
+    } else if (direction == west) {
+        walkTo(currentX - 1, direction);
+    } else if (direction == north) {
+        walkTo(direction, currentZ - 1);
+    } else if (direction == east) {
+        walkTo(currentX + 1, direction);
+    } else {
+        Chat.log("ERROR: Broken chopTree() function!");
+    }
     if (startingX != currentX) {                            // If at the beginning of NEW row
         Chat.log("LOG: Detected new row, assigning newStartingZ!");
         newStartingZ = currentZ;
