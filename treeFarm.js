@@ -138,13 +138,16 @@ function walkRow(direction) {
 
 // Function to plant a sapling
 function replant(direction) {
+    Time.sleep(250);
     Player.getPlayer().lookAt(direction, 90);               // Look straight down
     pick(sapling);                                          // Equip sapling to replant
-    Client.waitTick();
+    Time.sleep(250);
     KeyBind.keyBind('key.use', true);
+    Client.waitTick(1);
     KeyBind.keyBind('key.use', false);
-    Client.waitTick();
+    Time.sleep(250);
     Player.getPlayer().lookAt(direction, 0);
+    Time.sleep(250);
 }
 
 // Function to break potential leaves before walking

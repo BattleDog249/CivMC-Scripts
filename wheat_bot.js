@@ -181,50 +181,48 @@ function deposit(name, timeout = 500) {
 // helper function which can be configured for (almost) any crop farm
 // tx, tz: target coordinates, bot will exit cleanly when it arrives
 // yaw, pitch: angle the bot will look at
-// movekey: key to be pressed while moving. typically w, a, s, or d
-// mouse: left or right mouse key to be pressed
 // item: e.g. minecraft:diamond_axe for harvesting or minecraft:wheat_seeds etc. for replanting
 // pause: tick delay between each mouse key press. may be useful to increase if the bot encounters anticheat issues
 // error: whether or not the bot should abort if it is unable to pick the specified item
 
-function farmLine(tx, tz, yaw, pitch = 90, movekey = "w", mouse = "left", item = null, pause = 1, dura = 15, error = false) {
+function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1, dura = 15, error = false) {
     pos = Player.getPlayer().getPos();
     Player.getPlayer().lookAt(yaw, pitch);
     if (item != null) {
         pick(item);
     }
+    //Client.waitTick(pause);
+    KeyBind.key('key.attack', true);
+    KeyBind.key('key.attack', false);
     Client.waitTick(pause);
-    KeyBind.key("key.mouse." + mouse, true);
-    KeyBind.key("key.mouse." + mouse, false);
-    Client.waitTick(pause);
-    KeyBind.key("key.keyboard." + movekey, true);
+    KeyBind.key('key.forward', true);
     while ((parseInt(pos.z) == tz || parseInt(pos.x) == tx) && !(parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
         Player.getPlayer().lookAt(yaw, pitch);
         if (item != null) {
             if (!pick(item, dmg = dura) && error) {
                 Chat.say("/g sa-info failed to pick item, aborting");
-                KeyBind.key("key.keyboard." + movekey, false);
+                KeyBind.key('key.forward', false);
                 throw 'Exception';
             }
         }
         Client.waitTick(pause);
-        KeyBind.key("key.mouse." + mouse, true);
-        KeyBind.key("key.mouse." + mouse, false);
+        KeyBind.key('key.attack', true);
+        KeyBind.key('key.attack', false);
         pos = Player.getPlayer().getPos();
     }
-    KeyBind.key("key.keyboard." + movekey, false);
+    KeyBind.key('key.forward', false);
     if ((parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
         Player.getPlayer().lookAt(yaw, pitch);
         if (item != null) {
             if (!pick(item, dmg = dura) && error) {
                 Chat.say("/g sa-info failed to pick item, aborting");
-                KeyBind.key("key.keyboard." + movekey, false);
+                KeyBind.key('key.forward', false);
                 throw 'Exception';
             }
         }
         Client.waitTick(pause);
-        KeyBind.key("key.mouse." + mouse, true);
-        KeyBind.key("key.mouse." + mouse, false);
+        KeyBind.key('key.attack', true);
+        KeyBind.key('key.attack', false);
         Client.waitTick(pause);
     } else {
         Chat.log("coordinate mismatch, aborting");
@@ -302,9 +300,11 @@ for (let rx = parseInt(pos.x); endx + 1; rx++) {
         pick(tool);
     }
     Time.sleep(250);
-    farmLine(rx, endz, hyaw, pitch = 90, movekey = "w", mouse = "left", item = tool, pause = 1, dura = 15, error = false);
+    farmLine(rx, endz, hyaw, pitch = 90, item = tool, pause = 1, dura = 15, error = false);
+    rx += 1;
+    walkTo(rx, endz)
     Time.sleep(250);
-    farmLine(rx, startz, pyaw, pitch = 90, movekey = "w", mouse="right", item = seeditem, pause = 1, dura = 15, error = false);
+    farmLine(rx, startz, pyaw, pitch = 90, item = tool, pause = 1, dura = 15, error = false);
     Time.sleep(250);
     if (GlobalVars.getBoolean("stopall") == true) {
         Chat.log("STOPALL");
