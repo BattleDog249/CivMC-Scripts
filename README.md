@@ -1,4 +1,4 @@
-A repository for JavaScript macros and bots for automating processes on the CivMC Minecraft server, using the JsMacros Minecraft mod.
+This repository is not officially affiliated with the CivMC server.
 
 Currently supports the latest version of JsMacros for Minecraft 1.18.2
 
