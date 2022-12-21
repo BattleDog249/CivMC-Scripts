@@ -203,9 +203,9 @@ pos = Player.getPlayer().getPos();
 walkTo();
 
 // North to South start, turn West WORKING
-while (pos.x > endX || pos.z < endZ) {                      // While in confines of farm
+while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
 
-    while (pos.z < endZ) {                                  // While in row
+    while (pos.z < endZ) {                              // While in row
         chopLeaves(rowDirection);                           // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x, pos.z + width);                       // Walk to next tree in row
         chopTree1(rowDirection);                            // Harvest 1
@@ -214,22 +214,22 @@ while (pos.x > endX || pos.z < endZ) {                      // While in confines
         replant(rowDirection);                              // Replant tree
     }
 
-    if (pos.x == endX) {                                    // If at last row, break
-        break;
-    } else if (pos.x > endX) {                              // If not at last row
+    if (pos.x == endX) {                                // If at last row
+        break;                                              // Break
+    } else if (pos.x > endX) {                          // If not at last row
         chopLeaves(turnDirection);                          // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x - width, pos.z);                       // Walk to first tree in next row
-        chopTree1(turnDirection);                           // Harvest 1
+        chopTree1(turnDirection);                           // Chop first two blocks of tree
         walkTo(pos.x - 1, pos.z);                           // Walk under first tree in next row
-        chopTree2(turnDirection);                           // Harvest 2
+        chopTree2(turnDirection);                           // Chop remaining floating tree
         replant(turnDirection);                             // Replant tree
     } else {
         Chat.log("ERROR: Navigation Error!");               // Error catcher
     }
     
-    flipDirection = rowDirection + 180;
+    flipDirection = rowDirection + 180;                 // Assign opposite direction
 
-    while (pos.z > startZ) {                                // While facing opposite direction from first row
+    while (pos.z > startZ) {                            // While facing opposite direction from first row
         chopLeaves(flipDirection);                          // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x, pos.z - width);
         chopTree1(flipDirection);                           // Harvest 1
