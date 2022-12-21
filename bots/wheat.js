@@ -1,5 +1,5 @@
 /*
-    JSMacros Wheat Farm Bot
+    JSMacros Wheat Farm Bot REFACTOR
 
     @author TheOrangeWizard
     @author BattleDog249
