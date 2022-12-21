@@ -50,8 +50,11 @@ width = 4;
 //startX = 3247.5;
 //startZ = -2396.5;
 // Third level of Mehri tree farm
+//startX = 3247.5;
+//startZ = -2395.5;
+// Fourth level of Mehri tree farm
 startX = 3247.5;
-startZ = -2395.5;
+startZ = -2394.5;
 
 // Assign coords of last tree opposite of starting coords
 // Testing coords
@@ -64,8 +67,11 @@ startZ = -2395.5;
 //endX = 3172.5;
 //endZ = -2331.5;
 // Third level of Mehri tree farm
+//endX = 3172.5;
+//endZ = -2330.5;
+// Third level of Mehri tree farm
 endX = 3172.5;
-endZ = -2330.5;
+endZ = -2329.5;
 
 // Function to equip a given item on the hotbar if located in inventory
 // name = "minecraft:itemname"
