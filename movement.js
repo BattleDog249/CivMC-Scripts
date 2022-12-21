@@ -223,7 +223,7 @@ while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
         walkTo(pos.x - 1, pos.z);                           // Walk under first tree in next row
         chopTree2(turnDirection);                           // Chop remaining floating tree
         replant(turnDirection);                             // Replant tree
-    } else {
+    } else {                                            // Else anything else
         Chat.log("ERROR: Navigation Error!");               // Error catcher
     }
     
@@ -231,24 +231,24 @@ while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
 
     while (pos.z > startZ) {                            // While facing opposite direction from first row
         chopLeaves(flipDirection);                          // Break leaves in front of next tree, and waits just long enough to collect falling logs too
-        walkTo(pos.x, pos.z - width);
-        chopTree1(flipDirection);                           // Harvest 1
-        walkTo(pos.x, pos.z - 1);
-        chopTree2(flipDirection);                           // Harvest 2
+        walkTo(pos.x, pos.z - width);                       // Walk to first tree in next row
+        chopTree1(flipDirection);                           // Chop first two blocks of tree
+        walkTo(pos.x, pos.z - 1);                           // Walk under first tree in next row
+        chopTree2(flipDirection);                           // Chop remaining floating tree
         replant(flipDirection);                             // Replant tree
     }
     
-    if (pos.x == endX) {
-        break;
-    } else if (pos.x > endX) {
+    if (pos.x == endX) {                                // If at last row
+        break;                                              // Break
+    } else if (pos.x > endX) {                          // If not at last row
         chopLeaves(turnDirection);                          // Break leaves in front of next tree, and waits just long enough to collect falling logs too
-        walkTo(pos.x - width, pos.z);
-        chopTree1(turnDirection);                           // Harvest 1
-        walkTo(pos.x - 1, pos.z);
-        chopTree2(rowDirection);                            // Harvest 2
+        walkTo(pos.x - width, pos.z);                       // Walk to first tree in next row
+        chopTree1(turnDirection);                           // Chop first two blocks of tree
+        walkTo(pos.x - 1, pos.z);                           // Walk under first tree in next row
+        chopTree2(rowDirection);                            // Chop remaining floating tree
         replant(rowDirection);                              // Replant tree
-    } else {
-        Chat.log("ERROR: Navigation Error!");
+    } else {                                            // Else anything else
+        Chat.log("ERROR: Navigation Error!");               // Error catcher
     }
 }
 
