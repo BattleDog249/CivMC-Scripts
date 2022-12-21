@@ -83,7 +83,69 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
     return true;
 }
 
-Chat.log("Starting!");
+// Function to break potential leaves before walking
+function chopLeaves(direction) {
+    Player.getPlayer().lookAt(direction, 0);                // Looks in correct direction
+    pick(leafTool);                                         // Equip tool used to break leaves
+    KeyBind.keyBind('key.attack', true);                    // Begin breaking leaves between trees
+    Client.waitTick(leafBreakTime * treeWidth);             // Wait to break all leaves between trees before walking; prevents weird glitches on CivMC
+    KeyBind.keyBind('key.attack', false);                   // Stop breaking leaves between trees
+}
+
+// Function to plant a sapling
+function replant(direction) {
+    Time.sleep(250);
+    Player.getPlayer().lookAt(direction, 90);               // Look straight down
+    pick(sapling);                                          // Equip sapling to replant
+    Time.sleep(250);
+    KeyBind.keyBind('key.use', true);
+    Client.waitTick(1);
+    KeyBind.keyBind('key.use', false);
+    Time.sleep(250);
+    Player.getPlayer().lookAt(direction, 0);
+    Time.sleep(250);
+}
+
+// Function to harvest a single tree
+function chopTree(direction) {
+    //Chat.log("LOG: Start - chopTree()");
+    KeyBind.keyBind('key.forward', false);                  // Stop walking to begin chopping
+    Time.sleep(250);
+    pick(logTool);                                          // Equip tool used to break logs
+    Client.waitTick(recoveryBuffer);                        // Buffer to successfully break next log
+    Player.getPlayer().lookAt(direction, 75);               // Look down at bottom log
+    KeyBind.keyBind('key.attack', true);                    // Beginning chopping bottom log
+    Client.waitTick(breakTime);                             // Chop for amount of time it takes to break log with selected axe
+    KeyBind.keyBind('key.attack', false);                   // Stop chopping bottom log
+    Client.waitTick(recoveryBuffer);                        // Buffer to successfully break next log
+    Player.getPlayer().lookAt(direction, 0);                // Look at middle log
+    KeyBind.keyBind('key.attack', true);                    // Beginning chopping middle log
+    Client.waitTick(breakTime);                             // Chop for amount of time it takes to break log with selected axe
+    KeyBind.keyBind('key.attack', false);                   // Stop chopping to walk forward under tree
+    Client.waitTick(recoveryBuffer);                        // Buffer to successfully break next log; potential fix for random trees not getting fully chopped?
+    KeyBind.keyBind('key.forward', true);                   // Start walking under tree
+    Client.waitTick(3);                                     // Should be time it takes in ticks to walk 1 block; not sure exact value
+    KeyBind.keyBind('key.forward', false);                  // Stop under tree
+    walkTo();                                               // Center bot exactly under tree
+    Client.waitTick(recoveryBuffer);
+    replant(direction);                                     // Replant sapling
+    Client.waitTick(recoveryBuffer);
+    pick(logTool);                                          // Equip tool used to break logs
+    Client.waitTick(recoveryBuffer);
+    Player.getPlayer().lookAt(direction, -90);              // Look straight up
+    KeyBind.keyBind('key.attack', true);                    // Begin chopping rest of tree
+    Client.waitTick(breakTime * treeHeight + breakTime);    // Time it takes to chop maximum height tree
+    KeyBind.keyBind('key.attack', false);                   // Stop chopping tree
+    chopLeaves(direction);                                  // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+    //Chat.log("LOG: End - chopTree()");
+}
+
+// Set to tools to be used in harvest
+logTool = "minecraft:iron_axe";
+leafTool = "minecraft:stick"
+
+// Set to sapling type to replant
+sapling = "minecraft:oak_sapling";
 
 width = 4;
 
@@ -97,11 +159,13 @@ pos = Player.getPlayer().getPos();
 
 walkTo();
 
-//North to South start WORKING
+//North to South start, turn West WORKING
 while (pos.x > endX || pos.z < endZ) {
 
     while (pos.z < endZ) {
+        chopLeaves();
         walkTo(pos.x, pos.z + width);
+        chopTree();
         walkTo(pos.x, pos.z + 1);
         walkTo();
     }
