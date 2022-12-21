@@ -161,8 +161,9 @@ function chopLeaves(direction) {
 
 // Function to harvest a single tree
 function chopTree(direction) {
-    //Chat.log("LOG: Start - chopTree()");
+    Chat.log("LOG: Start - chopTree()");
     KeyBind.keyBind('key.forward', false);                  // Stop walking to begin chopping
+    Time.sleep(250);
     pick(logTool);                                          // Equip tool used to break logs
     Client.waitTick(recoveryBuffer);                        // Buffer to successfully break next log
     Player.getPlayer().lookAt(direction, 75);               // Look down at bottom log
@@ -179,8 +180,11 @@ function chopTree(direction) {
     Client.waitTick(3);                                     // Should be time it takes in ticks to walk 1 block; not sure exact value
     KeyBind.keyBind('key.forward', false);                  // Stop under tree
     centerSelf();                                           // Center bot exactly under tree
+    Client.waitTick(recoveryBuffer);
     replant(direction);                                     // Replant sapling
+    Client.waitTick(recoveryBuffer);
     pick(logTool);                                          // Equip tool used to break logs
+    Client.waitTick(recoveryBuffer);
     Player.getPlayer().lookAt(direction, -90);              // Look straight up
     KeyBind.keyBind('key.attack', true);                    // Begin chopping rest of tree
     Client.waitTick(breakTime * treeHeight + breakTime);    // Time it takes to chop maximum height tree
@@ -210,6 +214,7 @@ function harvestRowNS(direction) {
     } else {                                                // Executes at FIRST row
         while ((currentZ < (startingZ + farmWidth - 1)) == true) {
             currentZ = Player.getPlayer().getZ();           // Acquires current Z coordinate
+            Chat.log("LOG: Start - walkRow()");
             walkRow(direction);                             // Call walkRow function
             if (currentZ >= anchorZ_NS - 0.1) {             // If at beginning of tree, start chopping
                 chopTree(direction);                        // Call chopTree function

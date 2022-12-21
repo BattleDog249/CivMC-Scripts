@@ -1,0 +1,103 @@
+function walkTo(x = null, z = null, precise = false, timeout = null) {
+    pos = Player.getPlayer().getPos();
+    if (x == null) {
+        x = pos.x;
+    }
+    if (z == null) {
+        z = pos.z;
+    }
+    if (precise) {
+        tx = x;
+        tz = z;
+    } else {
+        if (x < 0) {
+            tx = parseInt(x) - 0.5;
+        } else {
+            tx = parseInt(x) + 0.5;
+        }
+        if (z < 0) {
+            tz = parseInt(z) - 0.5;
+        } else {
+            tz = parseInt(z) + 0.5;
+        }
+    }
+    Chat.log("walking to x: " + tx + ", z: " + tz);
+    KeyBind.keyBind('key.forward', true);
+    timer = 0;
+    while (true) {
+        Player.getPlayer().lookAt(tx, pos.y, tz);
+        pos = Player.getPlayer().getPos();
+        if (Math.abs(pos.x - tx) < 0.5 && Math.abs(pos.z - tz) < 0.5) {
+            KeyBind.keyBind('key.sneak', false);
+        }
+        if (Math.abs(pos.x - tx) < 0.075 && Math.abs(pos.z - tz) < 0.075) {
+            break;
+        }
+        Client.waitTick();
+        timer += 1;
+        if (timeout && timer > timeout) {
+            Chat.log("walkTo timed out");
+            KeyBind.keyBind('key.forward', false);
+            KeyBind.keyBind('key.sneak', false);
+            return false;
+        }
+    }
+    KeyBind.keyBind('key.forward', false);
+    KeyBind.keyBind('key.sneak', false);
+    Client.waitTick(5);
+    pos = Player.getPlayer().getPos();
+    Player.getPlayer().getRaw().method_5814(tx, pos.y, tz);
+    return true;
+}
+
+Chat.log("Starting!")
+
+width = 4;
+
+startX = -122.5;
+startZ = 81.5;
+
+endX = -132.5;
+endZ = 6.5;
+
+pos = Player.getPlayer().getPos();
+
+walkTo();
+
+//North to South start WORKING
+while (pos.x > endX || pos.z < endZ) {
+
+    while (pos.z < endZ) {
+        walkTo(pos.x, pos.z + width);
+        walkTo(pos.x, pos.z + 1);
+        walkTo();
+    }
+
+    if (pos.x == endX) {
+        break;
+    } else if (pos.x > endX) {
+        walkTo(pos.x - width, pos.z);
+        walkTo(pos.x - 1, pos.z);
+        walkTo();
+    } else {
+        Chat.log("ERROR: Navigation Error!");
+    }
+    
+    while (pos.z > startZ) {
+        walkTo(pos.x, pos.z - width);
+        walkTo(pos.x, pos.z - 1);
+        walkTo();
+    }
+    
+    if (pos.x == endX) {
+        break;
+    } else if (pos.x > endX) {
+        walkTo(pos.x - width, pos.z);
+        walkTo(pos.x - 1, pos.z);
+        walkTo();
+    } else {
+        Chat.log("ERROR: Navigation Error!");
+    }
+}
+
+Chat.log("Done!");
