@@ -197,9 +197,9 @@ function replant(direction) {
 // Function to harvest bottom two blocks of tree
 function chopTree1(direction) {
     //Chat.log("LOG: Start - chopTree1()");
-    Time.sleep(250);                                        // Wait buffer
+    Time.sleep(200);                                        // Wait buffer
     pick(logTool);                                          // Equip tool used to break logs
-    Client.waitTick(recoveryBuffer);                        // Wait to successfully break next log
+    Time.sleep(200);                                        // Wait buffer
     Player.getPlayer().lookAt(direction, 60);               // Look down at bottom log
     KeyBind.keyBind('key.attack', true);                    // Start chopping bottom log
     Client.waitTick(breakTime);                             // Wait until log breaks with selected axe
