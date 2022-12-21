@@ -1,6 +1,6 @@
 /*
     JSMacros Wheat Farm Bot
-    
+
     @author TheOrangeWizard
     @author BattleDog249
     @contact battledog249@proton.me
@@ -9,16 +9,16 @@
 
 // Must start at northwest corner! For now...
 
-tool = "minecraft:air"; // to be used when clicking crops
+tool = "minecraft:stick"; // to be used when clicking crops
 threshold = 8; // bot will perform a dropoff once it has this amount of inventory space left
 
 // Starting corner of the crop field
-startx = 2451;
-startz = -1848;
+startx = 145;
+startz = 155;
 
 // Opposite corner of the crop field
-endx = 2531;
-endz = -1714;
+endx = 216;
+endz = 226;
 
 // Item config
 seeditem = "minecraft:wheat_seeds";
@@ -47,21 +47,17 @@ if (startz < endz) {
     pyaw = 0;
 }
 
-// puts a given item on your hotbar if it is in your inventory.
-// similar to macromod PICK()
+// Function to equip a given item on the hotbar if located in inventory
 // name = "minecraft:itemname"
-// hotbar = preferred hotbar slot (may not be used)
-// dmg = minimum damage value, intended for use with tools to prevent breakages
-
-function pick(name, dmg = -1) {
+// hotbar = Preferred hotbar slot (may not be used)
+// dmg = Minimum damage value, intended for use with tools to prevent breakages
+function pick(name, hotbar = null, dmg = -1) {
     inv = Player.openInventory();
     slots = inv.getMap();
-    hotbar = inv.getSelectedHotbarSlotIndex();
-    /*
+
     if (hotbar == null) {
         hotbar = inv.getSelectedHotbarSlotIndex();
     }
-    */
 
     slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];
     item = inv.getSlot(slot);
@@ -71,12 +67,11 @@ function pick(name, dmg = -1) {
         inv.close();
         return true;
     }
-    
+
     for (slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
         let item = inv.getSlot(slot);
         if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {
             //Chat.log(`Found ${item.getItemId()} at slot ${slot}.`);
-            //Time.sleep(250);
             inv.swap(slot, slots["hotbar"][hotbar]);
             Time.sleep(250);
             inv.setSelectedHotbarSlotIndex(parseInt(slot));
@@ -88,10 +83,9 @@ function pick(name, dmg = -1) {
     return false;
 }
 
-// walks to the centre of the given x, z coordinate. assumes flat y level
-// if x, z is ommitted then centres the player on the current block
-// precise=true attemts to walk to the exact coordinate rather than the centre of the block
-
+// Function that walks to the center of the given x, z coordinate; assumes flat y level
+// If x, z is ommitted then centers the bot on the current block
+// precise=true attempts to walk to the exact coordinate rather than the centre of the block
 function walkTo(x = null, z = null, precise = false, timeout = null) {
     pos = Player.getPlayer().getPos();
     if (x == null) {
@@ -144,90 +138,61 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
     return true;
 }
 
-function deposit(name, timeout = 500) {
-    KeyBind.key("key.mouse.right", true);
-    KeyBind.key("key.mouse.right", false);
-    
-    t = 0;
-    while (Hud.getOpenScreenName() == null && t < timeout) {
-        t += 1;
-        Client.waitTick();
-    }
-    
-    if (!(t < timeout)) {
-        Chat.log("failed to open inventory, cancelling");
-        return false;
-    }
-    
-    inv = Player.openInventory();
-    slots = inv.getMap();
-    
-    if (!!("container" in slots)) {
-        Chat.log("inventory not a container, cancelling");
-        inv.close();
-    }
-
-    for (let slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
-        item = inv.getSlot(slot);
-        num = item.getCount();
-        if (item.getItemId() === name) {
-            inv.quick(slot);
-            Client.waitTick();
-        }
-    }
-    
-    Time.sleep(500);
-    
-    inv.close();
-}
-
 // helper function which can be configured for (almost) any crop farm
 // tx, tz: target coordinates, bot will exit cleanly when it arrives
 // yaw, pitch: angle the bot will look at
-// movekey: key to be pressed while moving. typically w, a, s, or d
-// mouse: left or right mouse key to be pressed
 // item: e.g. minecraft:diamond_axe for harvesting or minecraft:wheat_seeds etc. for replanting
 // pause: tick delay between each mouse key press. may be useful to increase if the bot encounters anticheat issues
 // error: whether or not the bot should abort if it is unable to pick the specified item
 
-function farmLine(tx, tz, yaw, pitch = 90, movekey = "w", mouse = "left", item = null, pause = 1, dura = 15, error = false) {
+function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1, dura = 15, error = false) {
+
     pos = Player.getPlayer().getPos();
+
     Player.getPlayer().lookAt(yaw, pitch);
+
     if (item != null) {
         pick(item);
     }
+
     Client.waitTick(pause);
-    KeyBind.key("key.mouse." + mouse, true);
-    KeyBind.key("key.mouse." + mouse, false);
+    KeyBind.key('key.use', true);
     Client.waitTick(pause);
-    KeyBind.key("key.keyboard." + movekey, true);
+    KeyBind.key('key.use', false);
+    Client.waitTick(pause);
+    KeyBind.key('key.forward', true);
     while ((parseInt(pos.z) == tz || parseInt(pos.x) == tx) && !(parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
         Player.getPlayer().lookAt(yaw, pitch);
         if (item != null) {
             if (!pick(item, dmg = dura) && error) {
-                Chat.say("/g sa-info failed to pick item, aborting");
-                KeyBind.key("key.keyboard." + movekey, false);
+                Chat.log("ERROR: Failed to pick item, aborting");
+                KeyBind.key('key.forward', false);
                 throw 'Exception';
             }
         }
         Client.waitTick(pause);
-        KeyBind.key("key.mouse." + mouse, true);
-        KeyBind.key("key.mouse." + mouse, false);
+        KeyBind.key('key.use', true);
+        Client.waitTick(pause);
+        KeyBind.key('key.use', false);
+        Client.waitTick(pause);
         pos = Player.getPlayer().getPos();
     }
-    KeyBind.key("key.keyboard." + movekey, false);
+    KeyBind.key('key.forward', false);
     if ((parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
+        rx += 1;            //testing
+        walkTo(rx, tz);     //testing
         Player.getPlayer().lookAt(yaw, pitch);
         if (item != null) {
             if (!pick(item, dmg = dura) && error) {
-                Chat.say("/g sa-info failed to pick item, aborting");
-                KeyBind.key("key.keyboard." + movekey, false);
+                Chat.log("ERROR: Failed to pick item, aborting");
+                KeyBind.key('key.forward', false);
                 throw 'Exception';
             }
         }
         Client.waitTick(pause);
-        KeyBind.key("key.mouse." + mouse, true);
-        KeyBind.key("key.mouse." + mouse, false);
+        KeyBind.key('key.use', true);
+        Client.waitTick(pause);
+        KeyBind.key('key.use', false);
         Client.waitTick(pause);
     } else {
         Chat.log("coordinate mismatch, aborting");
@@ -235,65 +200,10 @@ function farmLine(tx, tz, yaw, pitch = 90, movekey = "w", mouse = "left", item =
     }
 }
 
-// resets minecraft's window focus variable
-// useful for when clicks stop being registered after using a menu while tabbed out
-
-function resetFocus() {
-    focused = Reflection.getDeclaredField(Client.getMinecraft().getClass(), "field_1695");
-    focused.setAccessible(true);
-    focused.set(Client.getMinecraft(), true);
-    Client.waitTick();
-}
-
-function countItems(name, location = null) {
-    count = 0;
-    inv = Player.openInventory();
-    slots = inv.getMap();
-    for (section in slots) {
-        for (slot in slots[section]) {
-            item = inv.getSlot(slot);
-            if (item.getItemId() == name && (location == null || location == inv.getLocation(slot))) {
-                count += item.getCount();
-            }
-        }
-    }
-    return count;
-}
-
-function countInventorySpace() {
-    let count = 0;
-    let inv = Player.openInventory();
-    let slots = inv.getMap();
-    for (let slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
-        let item = inv.getSlot(slot);
-        if (item.getItemId() === "minecraft:air") {
-            count += 1;
-        }
-    }
-    return count;
-}
-
-function dropoff(tx, tz, item) {
-    walkTo(tx, tz);
-    if (item == deposititem) {
-        walkTo(depositwheatx, depositwheatz);
-        Player.getPlayer().lookAt(depositwheatyaw, depositwheatpitch);
-    }
-    if (item == seeditem) {
-        walkTo(depositseedx, depositseedz);
-        Player.getPlayer().lookAt(depositseedyaw, depositseedpitch);
-    }
-    Time.sleep(100);
-    deposit(item);
-    resetFocus();
-    Time.sleep(250);
-    walkTo(startx, startz);
-}
-
 pos = Player.getPlayer().getPos();
 rx = startx;
 
-for (let rx = parseInt(pos.x); endx + 1; rx++) {
+for (let rx = parseInt(pos.x); rx + 1; rx++) {
     countInventorySpace();
     if (countInventorySpace() < threshold) {
         dropoff(rx, startz, deposititem);
@@ -305,16 +215,14 @@ for (let rx = parseInt(pos.x); endx + 1; rx++) {
         pick(tool);
     }
     Time.sleep(250);
-    farmLine(rx, endz, hyaw, pitch = 90, movekey = "w", mouse = "left", item = tool, pause = 1, dura = 15, error = false);
+    farmLine(rx, endz, hyaw, pitch = 90, item = tool, pause = 1, dura = 15, error = false);
+    rx += 1;
+    walkTo(rx, endz)
     Time.sleep(250);
-    farmLine(rx, startz, pyaw, pitch = 90, movekey = "w", mouse="right", item = seeditem, pause = 1, dura = 15, error = false);
+    farmLine(rx, startz, pyaw, pitch = 90, item = tool, pause = 1, dura = 15, error = false);
     Time.sleep(250);
     if (GlobalVars.getBoolean("stopall") == true) {
         Chat.log("STOPALL");
         throw 'Exception';
     }
 }
-
-dropoff(pos.x, startz, deposititem);
-dropoff(pos.x, startz, seeditem);
-Chat.log("done!");
