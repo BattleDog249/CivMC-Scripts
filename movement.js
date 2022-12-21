@@ -55,7 +55,10 @@ startZ = -2396.5;
 endX = 3172.5;
 endZ = -2331.5;
 
-// Function for equipping a given item
+// Function to equip a given item on the hotbar if located in inventory
+// name = "minecraft:itemname"
+// hotbar = Preferred hotbar slot (may not be used)
+// dmg = Minimum damage value, intended for use with tools to prevent breakages
 function pick(name, hotbar = null, dmg = -1) {
     inv = Player.openInventory();
     slots = inv.getMap();
@@ -88,7 +91,9 @@ function pick(name, hotbar = null, dmg = -1) {
     return false;
 }
 
-// Function for movement to given coordinates, or to center self on block directly below
+// Function that walks to the center of the given x, z coordinate; assumes flat y level
+// If x, z is ommitted then centers the bot on the current block
+// precise=true attempts to walk to the exact coordinate rather than the centre of the block
 function walkTo(x = null, z = null, precise = false, timeout = null) {
     pos = Player.getPlayer().getPos();
     if (x == null) {
@@ -112,7 +117,7 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
             tz = parseInt(z) + 0.5;
         }
     }
-    Chat.log("walking to x: " + tx + ", z: " + tz);
+    //Chat.log("walking to x: " + tx + ", z: " + tz);
     KeyBind.keyBind('key.forward', true);
     timer = 0;
     while (true) {
@@ -202,7 +207,7 @@ pos = Player.getPlayer().getPos();
 // Center bot on starting block
 walkTo();
 
-// North to South start, turn West WORKING
+// North to South starting direction, West turns | WORKING, TESTING
 while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
 
     while (pos.z < endZ) {                              // While in row
