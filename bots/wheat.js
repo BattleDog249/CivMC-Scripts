@@ -138,6 +138,43 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
     return true;
 }
 
+function deposit(name, timeout = 500) {
+    KeyBind.keyBind("key.mouse.right", true);
+    KeyBind.keyBind("key.mouse.right", false);
+    
+    t = 0;
+    while (Hud.getOpenScreenName() == null && t < timeout) {
+        t += 1;
+        Client.waitTick();
+    }
+    
+    if (!(t < timeout)) {
+        Chat.log("failed to open inventory, cancelling");
+        return false;
+    }
+    
+    inv = Player.openInventory();
+    slots = inv.getMap();
+    
+    if (!!("container" in slots)) {
+        Chat.log("inventory not a container, cancelling");
+        inv.close();
+    }
+
+    for (let slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
+        item = inv.getSlot(slot);
+        num = item.getCount();
+        if (item.getItemId() === name) {
+            inv.quick(slot);
+            Client.waitTick();
+        }
+    }
+    
+    Time.sleep(500);
+    
+    inv.close();
+}
+
 // helper function which can be configured for (almost) any crop farm
 // tx, tz: target coordinates, bot will exit cleanly when it arrives
 // yaw, pitch: angle the bot will look at
@@ -156,51 +193,92 @@ function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1, dura = 15, er
     }
 
     Client.waitTick(pause);
-    KeyBind.key('key.use', true);
+    KeyBind.keyBind('key.use', true);
     Client.waitTick(pause);
-    KeyBind.key('key.use', false);
+    KeyBind.keyBind('key.use', false);
     Client.waitTick(pause);
-    KeyBind.key('key.forward', true);
+
+    KeyBind.keyBind('key.forward', true);
     while ((parseInt(pos.z) == tz || parseInt(pos.x) == tx) && !(parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
         Player.getPlayer().lookAt(yaw, pitch);
         if (item != null) {
             if (!pick(item, dmg = dura) && error) {
                 Chat.log("ERROR: Failed to pick item, aborting");
-                KeyBind.key('key.forward', false);
+                KeyBind.keyBind('key.forward', false);
                 throw 'Exception';
             }
         }
+
         Client.waitTick(pause);
-        KeyBind.key('key.use', true);
+        KeyBind.keyBind('key.use', true);
         Client.waitTick(pause);
-        KeyBind.key('key.use', false);
+        KeyBind.keyBind('key.use', false);
         Client.waitTick(pause);
         pos = Player.getPlayer().getPos();
     }
-    KeyBind.key('key.forward', false);
-    if ((parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
-        rx += 1;            //testing
-        walkTo(rx, tz);     //testing
-        Player.getPlayer().lookAt(yaw, pitch);
-        if (item != null) {
-            if (!pick(item, dmg = dura) && error) {
-                Chat.log("ERROR: Failed to pick item, aborting");
-                KeyBind.key('key.forward', false);
-                throw 'Exception';
+
+    KeyBind.keyBind('key.forward', false);
+    Client.waitTick(pause);
+}
+
+// Function to reset Minecraft's window focus variable
+// Useful for when clicks stop being registered after using a menu while tabbed out
+function resetFocus() {
+    focused = Reflection.getDeclaredField(Client.getMinecraft().getClass(), "field_1695");
+    focused.setAccessible(true);
+    focused.set(Client.getMinecraft(), true);
+    Client.waitTick();
+}
+
+function countItems(name, location = null) {
+    count = 0;
+    inv = Player.openInventory();
+    slots = inv.getMap();
+    for (section in slots) {
+        for (slot in slots[section]) {
+            item = inv.getSlot(slot);
+            if (item.getItemId() == name && (location == null || location == inv.getLocation(slot))) {
+                count += item.getCount();
             }
         }
-        Client.waitTick(pause);
-        KeyBind.key('key.use', true);
-        Client.waitTick(pause);
-        KeyBind.key('key.use', false);
-        Client.waitTick(pause);
-    } else {
-        Chat.log("coordinate mismatch, aborting");
-        throw 'Exception';
     }
+    return count;
+}
+
+function countInventorySpace() {
+    let count = 0;
+    let inv = Player.openInventory();
+    let slots = inv.getMap();
+    for (let slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
+        let item = inv.getSlot(slot);
+        if (item.getItemId() === "minecraft:air") {
+            count += 1;
+        }
+    }
+    return count;
+}
+
+function dropoff(tx, tz, item) {
+    walkTo(tx, tz);
+    if (item == deposititem) {
+        walkTo(depositwheatx, depositwheatz);
+        Player.getPlayer().lookAt(depositwheatyaw, depositwheatpitch);
+    }
+    if (item == seeditem) {
+        walkTo(depositseedx, depositseedz);
+        Player.getPlayer().lookAt(depositseedyaw, depositseedpitch);
+    }
+    Time.sleep(100);
+    deposit(item);
+    resetFocus();
+    Time.sleep(250);
+    walkTo(startx, startz);
 }
 
 pos = Player.getPlayer().getPos();
+
+walkTo(startx, startz);
+
 rx = startx;
 
 for (let rx = parseInt(pos.x); rx + 1; rx++) {
@@ -215,11 +293,11 @@ for (let rx = parseInt(pos.x); rx + 1; rx++) {
         pick(tool);
     }
     Time.sleep(250);
-    farmLine(rx, endz, hyaw, pitch = 90, item = tool, pause = 1, dura = 15, error = false);
+    farmLine(rx, endz, hyaw, pitch = 80, item = tool, pause = 1, dura = 15, error = false);
     rx += 1;
     walkTo(rx, endz)
     Time.sleep(250);
-    farmLine(rx, startz, pyaw, pitch = 90, item = tool, pause = 1, dura = 15, error = false);
+    farmLine(rx, startz, pyaw, pitch = 80, item = tool, pause = 1, dura = 15, error = false);
     Time.sleep(250);
     if (GlobalVars.getBoolean("stopall") == true) {
         Chat.log("STOPALL");
