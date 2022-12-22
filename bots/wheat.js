@@ -10,7 +10,7 @@
 // Must start at northwest corner! For now...
 
 tool = "minecraft:air"; // to be used when clicking crops
-threshold = 8; // bot will perform a dropoff once it has this amount of inventory space left
+threshold = 11; // bot will perform a dropoff once it has this amount of inventory space left
 
 // Starting corner of the crop field
 startx = 2464;
@@ -28,8 +28,8 @@ deposititem = "minecraft:wheat";
 depositwheatx = 2451;
 depositwheatz = -1848;
 
-depositseedx = startx;
-depositseedz = startz;
+depositseedx = 2451;
+depositseedz = -1848;
 
 // yaw and pitch for the Player to look at when depositing items
 // note that 0 yaw is south, 90 is west, 180 is north, and 270 is east
@@ -180,9 +180,8 @@ function deposit(name, timeout = 500) {
 // yaw, pitch: angle the bot will look at
 // item: e.g. minecraft:diamond_axe for harvesting or minecraft:wheat_seeds etc. for replanting
 // pause: tick delay between each mouse key press. may be useful to increase if the bot encounters anticheat issues
-// error: whether or not the bot should abort if it is unable to pick the specified item
 
-function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1, dura = 15, error = false) {
+function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1) {
 
     pos = Player.getPlayer().getPos();
 
@@ -197,20 +196,9 @@ function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1, dura = 15, er
     Client.waitTick(pause);
     KeyBind.keyBind('key.use', false);
     Client.waitTick(pause);
-
     KeyBind.keyBind('key.forward', true);
     while ((parseInt(pos.z) == tz || parseInt(pos.x) == tx) && !(parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
         Player.getPlayer().lookAt(yaw, pitch);
-        /*
-        if (item != null) {
-            if (!pick(item, dmg = dura) && error) {
-                Chat.log("ERROR: Failed to pick item, aborting");
-                KeyBind.keyBind('key.forward', false);
-                throw 'Exception';
-            }
-        }
-        */
-
         Client.waitTick(pause);
         KeyBind.keyBind('key.use', true);
         Client.waitTick(pause);
@@ -218,7 +206,6 @@ function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1, dura = 15, er
         Client.waitTick(pause);
         pos = Player.getPlayer().getPos();
     }
-
     KeyBind.keyBind('key.forward', false);
     Client.waitTick(pause);
 }
@@ -293,11 +280,11 @@ for (let rx = parseInt(pos.x); rx + 1; rx++) {
         pick(tool);
     }
     Time.sleep(250);
-    farmLine(rx, endz, hyaw, pitch = 30, item = tool, pause = 1, dura = 15, error = false);
+    farmLine(rx, endz, hyaw, pitch = 30, pause = 1);
     rx += 1;
     walkTo(rx, endz)
     Time.sleep(250);
-    farmLine(rx, startz, pyaw, pitch = 30, item = tool, pause = 1, dura = 15, error = false);
+    farmLine(rx, startz, pyaw, pitch = 30, pause = 1);
     Time.sleep(250);
     if (GlobalVars.getBoolean("stopall") == true) {
         Chat.log("STOPALL");
