@@ -1,5 +1,5 @@
 /*
-    JSMacros Tree Farm Bot REFACTOR
+    JSMacros Tree Farm Bot
 
     @author BattleDog249
     @contact battledog249@proton.me
@@ -224,6 +224,8 @@ function chopTree2(direction) {
     KeyBind.keyBind('key.attack', false);                   // Stop chopping
     //Chat.log("LOG: Stop - chopTree2()");
 }
+
+Chat.log("Starting!");
 
 // Grab current coordinates
 pos = Player.getPlayer().getPos();

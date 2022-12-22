@@ -1,7 +1,6 @@
 /*
-    JSMacros Wheat Farm Bot REFACTOR
+    JSMacros Wheat Farm Bot
 
-    @author TheOrangeWizard
     @author BattleDog249
     @contact battledog249@proton.me
     @contact BattleDog249#9512
@@ -9,30 +8,33 @@
 
 // Must start at northwest corner! For now...
 
-tool = "minecraft:air"; // to be used when clicking crops
-threshold = 11; // bot will perform a dropoff once it has this amount of inventory space left
+// Set tool to use when clicking
+tool = "minecraft:air";
 
-// Starting corner of the crop field
+// Set amount of inventory space left before performing a dropoff
+threshold = 11;
+
+// Set starting (NW) corner of the crop field
 startx = 2464;
 startz = -1848;
 
-// Opposite corner of the crop field
+// Set opposite corner of the crop field
 endx = 2531;
 endz = -1714;
 
-// Item config
+// Set items expected to gather during harvest
 seeditem = "minecraft:wheat_seeds";
 deposititem = "minecraft:wheat";
 
-// coordinates for the Player to walk to when depositing items
+// Set coordinates to walk to when depositing items
 depositwheatx = 2451;
 depositwheatz = -1848;
 
 depositseedx = 2451;
 depositseedz = -1848;
 
-// yaw and pitch for the Player to look at when depositing items
-// note that 0 yaw is south, 90 is west, 180 is north, and 270 is east
+// Set yaw & pitch to look at when depositing items
+// South: 0, West: 90, North: 180, East: 270
 depositwheatyaw = 180;
 depositwheatpitch = -75;
 
@@ -138,6 +140,8 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
     return true;
 }
 
+// Function for depositing a given item
+// timeout: Time in ms for failing to open inventory 
 function deposit(name, timeout = 500) {
     KeyBind.keyBind("key.mouse.right", true);
     KeyBind.keyBind("key.mouse.right", false);
@@ -175,12 +179,11 @@ function deposit(name, timeout = 500) {
     inv.close();
 }
 
-// helper function which can be configured for (almost) any crop farm
+// Function for harvesting a row of crops via right-click
 // tx, tz: target coordinates, bot will exit cleanly when it arrives
 // yaw, pitch: angle the bot will look at
 // item: e.g. minecraft:diamond_axe for harvesting or minecraft:wheat_seeds etc. for replanting
-// pause: tick delay between each mouse key press. may be useful to increase if the bot encounters anticheat issues
-
+// pause: tick delay between each mouse key press, increase if the bot encounters anticheat issues
 function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1) {
 
     pos = Player.getPlayer().getPos();
@@ -234,6 +237,7 @@ function countItems(name, location = null) {
     return count;
 }
 
+// Function that counts accessable inventory space
 function countInventorySpace() {
     let count = 0;
     let inv = Player.openInventory();
@@ -282,7 +286,7 @@ for (let rx = parseInt(pos.x); rx + 1; rx++) {
     Time.sleep(250);
     farmLine(rx, endz, hyaw, pitch = 30, pause = 1);
     rx += 1;
-    walkTo(rx, endz)
+    walkTo(rx, endz);
     Time.sleep(250);
     farmLine(rx, startz, pyaw, pitch = 30, pause = 1);
     Time.sleep(250);
