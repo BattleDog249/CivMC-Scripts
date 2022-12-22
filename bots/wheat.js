@@ -15,7 +15,7 @@ tool = "minecraft:air";
 threshold = 11;
 
 // Set starting (NW) corner of the crop field
-startx = 2464;
+startx = 2499;
 startz = -1848;
 
 // Set opposite corner of the crop field
@@ -30,13 +30,13 @@ deposititem = "minecraft:wheat";
 depositwheatx = 2451;
 depositwheatz = -1848;
 
-depositseedx = 2451;
+depositseedx = 2453;
 depositseedz = -1848;
 
 // Set yaw & pitch to look at when depositing items
 // South: 0, West: 90, North: 180, East: 270
 depositwheatyaw = 180;
-depositwheatpitch = -75;
+depositwheatpitch = -73;
 
 depositseedyaw = 180;
 depositseedpitch = 0;
@@ -143,8 +143,9 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
 // Function for depositing a given item
 // timeout: Time in ms for failing to open inventory 
 function deposit(name, timeout = 500) {
-    KeyBind.keyBind("key.mouse.right", true);
-    KeyBind.keyBind("key.mouse.right", false);
+    KeyBind.keyBind("key.use", true);
+    Client.waitTick();
+    KeyBind.keyBind("key.use", false);
     
     t = 0;
     while (Hud.getOpenScreenName() == null && t < timeout) {
@@ -263,7 +264,6 @@ function dropoff(tx, tz, item) {
     deposit(item);
     resetFocus();
     Time.sleep(250);
-    walkTo(startx, startz);
 }
 
 pos = Player.getPlayer().getPos();
