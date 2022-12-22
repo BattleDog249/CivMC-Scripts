@@ -9,24 +9,24 @@
 
 // Must start at northwest corner! For now...
 
-tool = "minecraft:stick"; // to be used when clicking crops
+tool = "minecraft:air"; // to be used when clicking crops
 threshold = 8; // bot will perform a dropoff once it has this amount of inventory space left
 
 // Starting corner of the crop field
-startx = 145;
-startz = 155;
+startx = 2464;
+startz = -1848;
 
 // Opposite corner of the crop field
-endx = 216;
-endz = 226;
+endx = 2531;
+endz = -1714;
 
 // Item config
 seeditem = "minecraft:wheat_seeds";
 deposititem = "minecraft:wheat";
 
 // coordinates for the Player to walk to when depositing items
-depositwheatx = startx;
-depositwheatz = startz;
+depositwheatx = 2451;
+depositwheatz = -1848;
 
 depositseedx = startx;
 depositseedz = startz;
@@ -34,10 +34,10 @@ depositseedz = startz;
 // yaw and pitch for the Player to look at when depositing items
 // note that 0 yaw is south, 90 is west, 180 is north, and 270 is east
 depositwheatyaw = 180;
-depositwheatpitch = -14;
+depositwheatpitch = -75;
 
-depositseedyaw = 150;
-depositseedpitch = -40;
+depositseedyaw = 180;
+depositseedpitch = 0;
 
 if (startz < endz) {
     hyaw = 0;
@@ -201,6 +201,7 @@ function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1, dura = 15, er
     KeyBind.keyBind('key.forward', true);
     while ((parseInt(pos.z) == tz || parseInt(pos.x) == tx) && !(parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
         Player.getPlayer().lookAt(yaw, pitch);
+        /*
         if (item != null) {
             if (!pick(item, dmg = dura) && error) {
                 Chat.log("ERROR: Failed to pick item, aborting");
@@ -208,6 +209,7 @@ function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1, dura = 15, er
                 throw 'Exception';
             }
         }
+        */
 
         Client.waitTick(pause);
         KeyBind.keyBind('key.use', true);
@@ -261,11 +263,9 @@ function countInventorySpace() {
 function dropoff(tx, tz, item) {
     walkTo(tx, tz);
     if (item == deposititem) {
-        walkTo(depositwheatx, depositwheatz);
         Player.getPlayer().lookAt(depositwheatyaw, depositwheatpitch);
     }
     if (item == seeditem) {
-        walkTo(depositseedx, depositseedz);
         Player.getPlayer().lookAt(depositseedyaw, depositseedpitch);
     }
     Time.sleep(100);
@@ -284,8 +284,8 @@ rx = startx;
 for (let rx = parseInt(pos.x); rx + 1; rx++) {
     countInventorySpace();
     if (countInventorySpace() < threshold) {
-        dropoff(rx, startz, deposititem);
-        dropoff(rx, startz, seeditem);
+        dropoff(depositwheatx, depositwheatz, deposititem);
+        dropoff(depositseedx, depositseedz, seeditem);
     }
 
     walkTo(rx, startz);
@@ -293,11 +293,11 @@ for (let rx = parseInt(pos.x); rx + 1; rx++) {
         pick(tool);
     }
     Time.sleep(250);
-    farmLine(rx, endz, hyaw, pitch = 80, item = tool, pause = 1, dura = 15, error = false);
+    farmLine(rx, endz, hyaw, pitch = 30, item = tool, pause = 1, dura = 15, error = false);
     rx += 1;
     walkTo(rx, endz)
     Time.sleep(250);
-    farmLine(rx, startz, pyaw, pitch = 80, item = tool, pause = 1, dura = 15, error = false);
+    farmLine(rx, startz, pyaw, pitch = 30, item = tool, pause = 1, dura = 15, error = false);
     Time.sleep(250);
     if (GlobalVars.getBoolean("stopall") == true) {
         Chat.log("STOPALL");
