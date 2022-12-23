@@ -56,7 +56,7 @@ width = 4;
 //startX = 3247.5;
 //startZ = -2394.5;
 // Fifth level of Mehri tree farm
-startX = 3247.5;
+startX = 3177.5;
 startZ = -2393.5;
 
 // Assign coords of last tree opposite of starting coords
