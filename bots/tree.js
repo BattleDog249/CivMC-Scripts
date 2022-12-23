@@ -1,5 +1,5 @@
 /*
-    JSMacros Tree Farm Bot REFACTOR
+    JSMacros Tree Farm Bot
 
     @author BattleDog249
     @contact battledog249@proton.me
@@ -44,8 +44,8 @@ width = 4;
 //startX = 3247.5;
 //startZ = -2396.5;
 // First level of Mehri tree farm
-//startX = 3247.5;
-//startZ = -2397.5;
+startX = 3247.5;
+startZ = -2397.5;
 // Second level of Mehri tree farm
 //startX = 3247.5;
 //startZ = -2396.5;
@@ -56,16 +56,16 @@ width = 4;
 //startX = 3247.5;
 //startZ = -2394.5;
 // Fifth level of Mehri tree farm
-startX = 3177.5;
-startZ = -2393.5;
+//startX = 3247.5;
+//startZ = -2393.5;
 
 // Assign coords of last tree opposite of starting coords
 // Testing coords
 //endX = -132.5;
 //endZ = 6.5;
 // First level of Mehri tree farm
-//endX = 3172.5;
-//endZ = -2332.5;
+endX = 3172.5;
+endZ = -2332.5;
 // Second level of Mehri tree farm
 //endX = 3172.5;
 //endZ = -2331.5;
@@ -76,8 +76,8 @@ startZ = -2393.5;
 //endX = 3172.5;
 //endZ = -2329.5;
 // Fifth level of Mehri tree farm
-endX = 3172.5;
-endZ = -2328.5;
+//endX = 3172.5;
+//endZ = -2328.5;
 
 // Function to equip a given item on the hotbar if located in inventory
 // name = "minecraft:itemname"
@@ -224,6 +224,8 @@ function chopTree2(direction) {
     KeyBind.keyBind('key.attack', false);                   // Stop chopping
     //Chat.log("LOG: Stop - chopTree2()");
 }
+
+Chat.log("Starting!");
 
 // Grab current coordinates
 pos = Player.getPlayer().getPos();
