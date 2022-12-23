@@ -194,22 +194,14 @@ function replant(direction) {
     //Chat.log("LOG: Stop - replant()");
 }
 
-// Function to harvest bottom two blocks of tree
+// Function to harvest bottom two logs of tree
 function chopTree1(direction) {
     //Chat.log("LOG: Start - chopTree1()");
-    Time.sleep(200);                                        // Wait buffer
     pick(logTool);                                          // Equip tool used to break logs
-    Time.sleep(200);                                        // Wait buffer
-    Player.getPlayer().lookAt(direction, 60);               // Look down at bottom log
-    KeyBind.keyBind('key.attack', true);                    // Start chopping bottom log
-    Client.waitTick(breakTime);                             // Wait until log breaks with selected axe
-    KeyBind.keyBind('key.attack', false);                   // Stop chopping bottom log
-    Client.waitTick(recoveryBuffer);                        // Wait to successfully break next log
-    Player.getPlayer().lookAt(direction, 0);                // Look at middle log
-    KeyBind.keyBind('key.attack', true);                    // Start chopping middle log
-    Client.waitTick(breakTime);                             // Wait until log breaks with selected axe
-    KeyBind.keyBind('key.attack', false);                   // Stop chopping middle log
-    Client.waitTick(recoveryBuffer);                        // Wait to successfully break next log; potential fix for random trees not getting fully chopped?
+    Player.getPlayer().lookAt(direction, 35);               // Look downward at both logs
+    KeyBind.keyBind('key.attack', true);                    // Start chopping logs
+    Client.waitTick(breakTime * 2);                         // Wait until two logs break with selected axe
+    KeyBind.keyBind('key.attack', false);                   // Stop chopping
     //Chat.log("LOG: Stop - chopTree1()");
 }
 
@@ -218,7 +210,7 @@ function chopTree2(direction) {
     //Chat.log("LOG: Start - chopTree2()");
     pick(logTool);                                          // Equip tool used to break logs
     Player.getPlayer().lookAt(direction, -90);              // Look straight up
-    Client.waitTick(recoveryBuffer);                        // Wait to successfully break next log
+    Client.waitTick();                                      // Wait to successfully break next log
     KeyBind.keyBind('key.attack', true);                    // Start chopping floating tree
     Client.waitTick(breakTime * treeHeight + breakTime);    // Wait for time it takes to chop maximum height tree
     KeyBind.keyBind('key.attack', false);                   // Stop chopping
