@@ -6,24 +6,27 @@
     @contact BattleDog249#9512
 */
 
+// Variable used to set buffer time for block break variables, compensating for variances in time to break
 buffer = 6;
 
-// Variable used to set time in ticks it takes to break a leaf block with selected unenchanted tool + 6 for buffer
-leafBreakTime = 12;
+// Variable used to set time in ticks it takes to break a leaf block with selected unenchanted hoe
+// Nothing: 6, Wooden: 3, Stone: 2, Iron: 1, Diamond: 1, Netherite: 1, Gold: 1
+// Shears: 1, Sword: 2
+leafBreakTime = buffer + 6;
 
-// Variable used to set time in ticks it takes to break a log with selected unenchanted tool + 6 for buffer
-// Nothing: 66, Wooden: 36, Stone: 21, Iron: 16, Diamond: 14, Netherite: 13, Gold: 11
-logBreakTime = 16;
+// Variable used to set time in ticks it takes to break a log with selected unenchanted axe
+// Nothing: 60, Wooden: 30, Stone: 15, Iron: 10, Diamond: 8, Netherite: 7, Gold: 5
+logBreakTime = buffer + 10;
 
-// Set to the maximum height of tree; should be 6 for oak I think
-// The - 2 is to subtract the two bottom blocks already broken by the bot, so only change the first number if need be!
-treeHeight = 6 - 2;
+// Set to the maximum height of tree
+// Oak: 6, Birch: 7
+treeHeight = 6;
 
 // Set to (in blocks) distance between trees
 width = 4;
 
 breakBottom = logBreakTime * 2;
-breakTop = logBreakTime * treeHeight;
+breakTop = logBreakTime * (treeHeight - 2);
 breakLeaves = leafBreakTime * width;
 
 chop = 'key.attack';
@@ -43,19 +46,19 @@ sapling = "minecraft:oak_sapling";
 // Testing coords
 startX = -94.5;
 startZ = 4.5;
-// First level of Mehri tree farm
+// First level of tree farm
 //startX = 3247.5;
 //startZ = -2397.5;
-// Second level of Mehri tree farm
+// Second level of tree farm
 //startX = 3247.5;
 //startZ = -2396.5;
-// Third level of Mehri tree farm
+// Third level of tree farm
 //startX = 3247.5;
 //startZ = -2395.5;
-// Fourth level of Mehri tree farm
+// Fourth level of tree farm
 //startX = 3247.5;
 //startZ = -2394.5;
-// Fifth level of Mehri tree farm
+// Fifth level of tree farm
 //startX = 3247.5;
 //startZ = -2393.5;
 
@@ -63,19 +66,19 @@ startZ = 4.5;
 // Testing coords
 endX = -104.5;
 endZ = 14.5;
-// First level of Mehri tree farm
+// First level of tree farm
 //endX = 3172.5;
 //endZ = -2332.5;
-// Second level of Mehri tree farm
+// Second level of tree farm
 //endX = 3172.5;
 //endZ = -2331.5;
-// Third level of Mehri tree farm
+// Third level of tree farm
 //endX = 3172.5;
 //endZ = -2330.5;
-// Fourth level of Mehri tree farm
+// Fourth level of tree farm
 //endX = 3172.5;
 //endZ = -2329.5;
-// Fifth level of Mehri tree farm
+// Fifth level of tree farm
 //endX = 3172.5;
 //endZ = -2328.5;
 
@@ -248,7 +251,7 @@ Chat.log("Starting!");
 // Center bot on starting block
 walkTo();
 
-// North to South starting direction, West turns PERFECT
+// North to South starting direction, West turns
 while (pos.x > endX || pos.z < endZ) {                                          // While in confines of farm
 
     while (pos.z < endZ) {                                                          // While in row
