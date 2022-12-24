@@ -29,17 +29,8 @@ breakLeaves = leafBreakTime * width;
 chop = 'key.attack';
 plant = 'key.use';
 
-// Set amount of time it takes to recover from swing with an axe
-// Wooden: 25, Gold: 20, Stone: 25, Iron: 23, Diamond: 20, Netherite: 20
-//recoveryBuffer = 20;
-
-// Set to integer of cardinal direction when facing first tree from lodestone
-// South: 0, West: 90, North: 180, East: 270
-rowDirection = 0;
-
-// Set to integer of cardinal direction of the first change of direction of tree farm
-// South: 0, West: 90, North: 180, East: 270
-turnDirection = 90;
+// Grab current coordinates
+pos = Player.getPlayer().getPos();
 
 // Set to tools to be used in harvest
 logTool = "minecraft:iron_axe";
@@ -50,8 +41,8 @@ sapling = "minecraft:oak_sapling";
 
 // Assign to exact coords of starting block, typically lodestone
 // Testing coords
-//startX = 3247.5;
-//startZ = -2396.5;
+startX = -94.5;
+startZ = 4.5;
 // First level of Mehri tree farm
 //startX = 3247.5;
 //startZ = -2397.5;
@@ -62,16 +53,16 @@ sapling = "minecraft:oak_sapling";
 //startX = 3247.5;
 //startZ = -2395.5;
 // Fourth level of Mehri tree farm
-startX = 3247.5;
-startZ = -2394.5;
+//startX = 3247.5;
+//startZ = -2394.5;
 // Fifth level of Mehri tree farm
 //startX = 3247.5;
 //startZ = -2393.5;
 
 // Assign coords of last tree opposite of starting coords
 // Testing coords
-//endX = -132.5;
-//endZ = 6.5;
+endX = -104.5;
+endZ = 14.5;
 // First level of Mehri tree farm
 //endX = 3172.5;
 //endZ = -2332.5;
@@ -82,16 +73,31 @@ startZ = -2394.5;
 //endX = 3172.5;
 //endZ = -2330.5;
 // Fourth level of Mehri tree farm
-endX = 3172.5;
-endZ = -2329.5;
+//endX = 3172.5;
+//endZ = -2329.5;
 // Fifth level of Mehri tree farm
 //endX = 3172.5;
 //endZ = -2328.5;
 
+// Set to integer of cardinal direction when facing first tree from lodestone
+// South: 0, West: 90, North: 180, East: 270
+// Set to opposite yaw
+if (startZ < endZ) {
+    rowYaw = 0;
+    oppositeYaw = 180;
+} else {
+    rowYaw = 180;
+    oppositeYaw = 0;
+}
+
+// Set to integer of cardinal direction of the first change of direction of tree farm
+// South: 0, West: 90, North: 180, East: 270
+turnYaw = 90;
+
 // Function to equip a given item on the hotbar if located in inventory
-// name = "minecraft:itemname"
-// hotbar = Preferred hotbar slot (may not be used)
-// dmg = Minimum damage value, intended for use with tools to prevent breakages
+// name: "minecraft:itemname"
+// hotbar: Preferred hotbar slot (may not be used)
+// dmg: Minimum damage value, intended for use with tools to prevent breakages
 function pick(name, hotbar = null, dmg = -1) {
     inv = Player.openInventory();
     slots = inv.getMap();
@@ -150,7 +156,7 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
             tz = parseInt(z) + 0.5;
         }
     }
-    //Chat.log("walking to x: " + tx + ", z: " + tz);
+    Chat.log("walking to x: " + tx + ", z: " + tz);
     KeyBind.keyBind('key.forward', true);
     timer = 0;
     while (true) {
@@ -197,59 +203,73 @@ function interact(yaw, pitch, action, tool, time = 1, wait = 5) {
     //Chat.log("LOG: Stop - mine()");
 }
 
-Chat.log("Starting!");
+// Function for harvesting and replanting an entire tree
+function chopTree(yaw) {
+    //Chat.log("LOG: Start - chopTree()");
+    interact(yaw, 0, action = chop, tool = leafTool, time = breakLeaves);   // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+    pos = Player.getPlayer().getPos();                                      // Grab current coordinates
+    
+    // Walk to next tree in row
+    if (yaw == 0) {
+        walkTo(pos.x, pos.z + width);
+    } else if (yaw == 90) {
+        walkTo(pos.x - width, pos.z);
+    } else if (yaw = 180) {
+        walkTo(pos.x, pos.z - width);
+    } else if (yaw = 270) {
+        walkTo(pos.x + width, pos.z);
+    } else {
+        Chat.log("ERROR: Invalid yaw value for farm!");
+        throw 'Exception';
+    }
+    interact(yaw, 35, action = chop, tool = logTool, time = breakBottom);   // Chop first two blocks of tree
+    
+    // Walk exactly under floating tree
+    if (yaw == 0) {
+        walkTo(pos.x, pos.z + 1);
+    } else if (yaw == 90) {
+        walkTo(pos.x - 1, pos.z);
+    } else if (yaw == 180) {
+        walkTo(pos.x, pos.z - 1);
+    } else if (yaw == 270) {
+        walkTo(pos.x + 1, pos.z);
+    } else {
+        Chat.log("ERROR: Invalid yaw value for farm!");
+        throw 'Exception';
+    }
+    interact(yaw, -90, action = chop, tool = logTool, time = breakTop);     // Chop remaining tree
+    interact(yaw, 90, action = plant, tool = sapling);                      // Replant tree
+    //Chat.log("LOG: Stop - chopTree()");
+}
 
-// Grab current coordinates
-pos = Player.getPlayer().getPos();
+Chat.log("Starting!");
 
 // Center bot on starting block
 walkTo();
 
-// North to South starting direction, West turns | WORKING, TESTING
+// North to South starting direction, West turns PERFECT
 while (pos.x > endX || pos.z < endZ) {                                          // While in confines of farm
 
     while (pos.z < endZ) {                                                          // While in row
-        interact(rowDirection, 0, action = chop, tool = leafTool, time = breakLeaves);  // Break leaves in front of next tree, and waits just long enough to collect falling logs too
-        walkTo(pos.x, pos.z + width);                                                   // Walk to next tree in row
-        interact(rowDirection, 35, action = chop, tool = logTool, time = breakBottom);  // Chop first two blocks of tree
-        walkTo(pos.x, pos.z + 1);                                                       // Walk exactly under floating tree
-        interact(rowDirection, -90, action = chop, tool = logTool, time = breakTop);    // Chop remaining tree
-        interact(rowDirection, 90, action = plant, tool = sapling);                     // Replant tree
+        chopTree(rowYaw);
     }
 
     if (pos.x == endX) {                                                            // If at last row
         break;                                                                          // Break
     } else if (pos.x > endX) {                                                      // Else if not at last row
-        interact(turnDirection, 0, action = chop, tool = leafTool, time = breakLeaves); // Break leaves in front of next tree, and waits just long enough to collect falling logs too
-        walkTo(pos.x - width, pos.z);                                                   // Walk to first tree in next row
-        interact(turnDirection, 35, action = chop, tool = logTool, time = breakBottom); // Chop first two blocks of tree
-        walkTo(pos.x - 1, pos.z);                                                       // Walk under first tree in next row
-        interact(turnDirection, -90, action = chop, tool = logTool, time = breakTop);   // Chop remaining tree
-        interact(turnDirection, 90, action = plant, tool = sapling);                    // Replant tree
+        chopTree(turnYaw);
     } else {                                                                        // Else anything else
         Chat.log("ERROR: Navigation Error!");                                           // Error catcher
     }
 
-    flipDirection = rowDirection + 180;                                             // Assign opposite direction
-
     while (pos.z > startZ) {                                                        // While facing opposite direction from first row
-        interact(flipDirection, 0, action = chop, tool = leafTool, time = breakLeaves); // Break leaves in front of next tree, and waits just long enough to collect falling logs too
-        walkTo(pos.x, pos.z - width);                                                   // Walk to first tree in next row
-        interact(flipDirection, 35, action = chop, tool = logTool, time = breakBottom); // Chop first two blocks of tree
-        walkTo(pos.x, pos.z - 1);                                                       // Walk under first tree in next row
-        interact(flipDirection, -90, action = chop, tool = logTool, time = breakTop);   // Chop remaining tree
-        interact(flipDirection, 90, action = plant, tool = sapling);                    // Replant tree
+        chopTree(oppositeYaw);
     }
 
     if (pos.x == endX) {                                                            // If at last row
         break;                                                                          // Break
     } else if (pos.x > endX) {                                                      // Else if not at last row
-        interact(turnDirection, 0, action = chop, tool = leafTool, time = breakLeaves); // Break leaves in front of next tree, and waits just long enough to collect falling logs too
-        walkTo(pos.x - width, pos.z);                                                   // Walk to first tree in next row
-        interact(turnDirection, 35, action = chop, tool = logTool, time = breakBottom); // Chop first two blocks of tree
-        walkTo(pos.x - 1, pos.z);                                                       // Walk under first tree in next row
-        interact(turnDirection, -90, action = chop, tool = logTool, time = breakTop);   // Chop remaining tree
-        interact(turnDirection, 90, action = plant, tool = sapling);                    // Replant tree
+        chopTree(turnYaw);
     } else {                                                                        // Else anything else
         Chat.log("ERROR: Navigation Error!");                                           // Error catcher
     }
