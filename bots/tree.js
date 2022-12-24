@@ -90,7 +90,7 @@ if (startZ < endZ) {
     oppositeYaw = 0;
 }
 
-// Set to integer of cardinal direction of the first change of direction of tree farm
+// Set to integer of cardinal direction of traversals between rows
 // South: 0, West: 90, North: 180, East: 270
 turnYaw = 90;
 
@@ -156,7 +156,7 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
             tz = parseInt(z) + 0.5;
         }
     }
-    Chat.log("walking to x: " + tx + ", z: " + tz);
+    //Chat.log("walking to x: " + tx + ", z: " + tz);
     KeyBind.keyBind('key.forward', true);
     timer = 0;
     while (true) {
@@ -204,6 +204,7 @@ function interact(yaw, pitch, action, tool, time = 1, wait = 5) {
 }
 
 // Function for harvesting and replanting an entire tree
+// yaw: Cardinal direction of tree to be harvested
 function chopTree(yaw) {
     //Chat.log("LOG: Start - chopTree()");
     interact(yaw, 0, action = chop, tool = leafTool, time = breakLeaves);   // Break leaves in front of next tree, and waits just long enough to collect falling logs too
