@@ -44,7 +44,7 @@ width = 4;
 //startX = 3247.5;
 //startZ = -2396.5;
 // First level of Mehri tree farm
-startX = 3247.5;
+startX = 3217.5;
 startZ = -2397.5;
 // Second level of Mehri tree farm
 //startX = 3247.5;
@@ -95,8 +95,8 @@ function pick(name, hotbar = null, dmg = -1) {
     item = inv.getSlot(slot);
     dura = item.getMaxDamage() - item.getDamage();
 
-    if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {
-        inv.close();
+    if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected
+        inv.close();                                                                // Close player inventory
         return true;
     }
 
@@ -194,27 +194,19 @@ function replant(direction) {
     //Chat.log("LOG: Stop - replant()");
 }
 
-// Function to harvest bottom two logs of tree
-function chopTree1(direction) {
-    //Chat.log("LOG: Start - chopTree1()");
+// Function to chop a tree
+// yaw: Cardinal direction for bot to face
+// pitch: Vertical direction for bot to face
+// wait: Time in ticks for bot to chop
+function chopTree(yaw, pitch, wait) {
+    //Chat.log("LOG: Start - chopTree()");
     pick(logTool);                                          // Equip tool used to break logs
-    Player.getPlayer().lookAt(direction, 35);               // Look downward at both logs
-    KeyBind.keyBind('key.attack', true);                    // Start chopping logs
-    Client.waitTick(breakTime * 2);                         // Wait until two logs break with selected axe
-    KeyBind.keyBind('key.attack', false);                   // Stop chopping
-    //Chat.log("LOG: Stop - chopTree1()");
-}
-
-// Function to harvest remaining floating tree
-function chopTree2(direction) {
-    //Chat.log("LOG: Start - chopTree2()");
-    pick(logTool);                                          // Equip tool used to break logs
-    Player.getPlayer().lookAt(direction, -90);              // Look straight up
+    Player.getPlayer().lookAt(yaw, pitch);                  // Look at log(s)
     Client.waitTick();                                      // Wait to successfully break next log
-    KeyBind.keyBind('key.attack', true);                    // Start chopping floating tree
-    Client.waitTick(breakTime * treeHeight + breakTime);    // Wait for time it takes to chop maximum height tree
+    KeyBind.keyBind('key.attack', true);                    // Start chopping logs
+    Client.waitTick(wait);                                  // Wait until log(s) break
     KeyBind.keyBind('key.attack', false);                   // Stop chopping
-    //Chat.log("LOG: Stop - chopTree2()");
+    //Chat.log("LOG: Stop - chopTree()");
 }
 
 Chat.log("Starting!");
@@ -231,9 +223,9 @@ while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
     while (pos.z < endZ) {                              // While in row
         chopLeaves(rowDirection);                           // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x, pos.z + width);                       // Walk to next tree in row
-        chopTree1(rowDirection);                            // Harvest 1
-        walkTo(pos.x, pos.z + 1);                           // Walk exactly under tree
-        chopTree2(rowDirection);                            // Harvest 2
+        chopTree(rowDirection, 35, wait = breakTime * 2);   // Chop first two blocks of tree
+        walkTo(pos.x, pos.z + 1);                           // Walk exactly under floating tree
+        chopTree(rowDirection, -90, wait = breakTime * treeHeight); // Chop remaining tree
         replant(rowDirection);                              // Replant tree
     }
 
@@ -242,9 +234,9 @@ while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
     } else if (pos.x > endX) {                          // If not at last row
         chopLeaves(turnDirection);                          // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x - width, pos.z);                       // Walk to first tree in next row
-        chopTree1(turnDirection);                           // Chop first two blocks of tree
+        chopTree(turnDirection, 35, wait = breakTime * 2);  // Chop first two blocks of tree
         walkTo(pos.x - 1, pos.z);                           // Walk under first tree in next row
-        chopTree2(turnDirection);                           // Chop remaining floating tree
+        chopTree(turnDirection, -90, wait = breakTime * treeHeight); // Chop remaining tree
         replant(turnDirection);                             // Replant tree
     } else {                                            // Else anything else
         Chat.log("ERROR: Navigation Error!");               // Error catcher
@@ -255,9 +247,9 @@ while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
     while (pos.z > startZ) {                            // While facing opposite direction from first row
         chopLeaves(flipDirection);                          // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x, pos.z - width);                       // Walk to first tree in next row
-        chopTree1(flipDirection);                           // Chop first two blocks of tree
+        chopTree(flipDirection, 35, wait = breakTime * 2);  // Chop first two blocks of tree
         walkTo(pos.x, pos.z - 1);                           // Walk under first tree in next row
-        chopTree2(flipDirection);                           // Chop remaining floating tree
+        chopTree(flipDirection, -90, wait = breakTime * treeHeight); // Chop remaining tree
         replant(flipDirection);                             // Replant tree
     }
 
@@ -266,9 +258,9 @@ while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
     } else if (pos.x > endX) {                          // If not at last row
         chopLeaves(turnDirection);                          // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x - width, pos.z);                       // Walk to first tree in next row
-        chopTree1(turnDirection);                           // Chop first two blocks of tree
+        chopTree(turnDirection, 35, wait = breakTime * 2);  // Chop first two blocks of tree
         walkTo(pos.x - 1, pos.z);                           // Walk under first tree in next row
-        chopTree2(rowDirection);                            // Chop remaining floating tree
+        chopTree(turnDirection, -90, wait = breakTime * treeHeight); // Chop remaining tree
         replant(rowDirection);                              // Replant tree
     } else {                                            // Else anything else
         Chat.log("ERROR: Navigation Error!");               // Error catcher
