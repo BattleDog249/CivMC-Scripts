@@ -173,13 +173,13 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
 // Function to plant a sapling
 function replant(direction) {
     //Chat.log("LOG: Start - replant()");
-    pick(sapling);                                          // Equip sapling to replant
-    Player.getPlayer().lookAt(direction, 90);               // Look straight down
-    Time.sleep(100);                                        // Wait buffer
-    KeyBind.keyBind('key.use', true);                       // Start placing sapling
-    Client.waitTick(1);                                     // Wait to plant
-    KeyBind.keyBind('key.use', false);                      // Stop placing sapling
-    Time.sleep(100);                                        // Wait buffer
+    pick(sapling);                              // Equip sapling to replant
+    Player.getPlayer().lookAt(direction, 90);   // Look straight down
+    Time.sleep(100);                            // Wait buffer
+    KeyBind.keyBind('key.use', true);           // Start placing sapling
+    Client.waitTick(1);                         // Wait to plant
+    KeyBind.keyBind('key.use', false);          // Stop placing sapling
+    Time.sleep(100);                            // Wait buffer
     //Chat.log("LOG: Stop - replant()");
 }
 
@@ -187,15 +187,16 @@ function replant(direction) {
 // yaw: Cardinal direction for bot to face
 // pitch: Vertical direction for bot to face
 // tool: Set tool used to mine
-// wait: Time in ticks for bot to chop
-function mine(yaw, pitch, tool, wait) {
+// time: Time in ticks for bot to mine
+// wait: Time in ticks for buffer, useful with anticheat issues
+function mine(yaw, pitch, tool, time, wait = 1) {
     //Chat.log("LOG: Start - mine()");
-    pick(tool);                                             // Equip tool used to break logs
-    Player.getPlayer().lookAt(yaw, pitch);                  // Look at log(s)
-    Client.waitTick();                                      // Wait to successfully break next log
-    KeyBind.keyBind('key.attack', true);                    // Start chopping logs
-    Client.waitTick(wait);                                  // Wait until log(s) break
-    KeyBind.keyBind('key.attack', false);                   // Stop chopping
+    pick(tool);                             // Equip tool to mine desired blocks
+    Player.getPlayer().lookAt(yaw, pitch);  // Look in set direction
+    Client.waitTick(wait);                  // Wait buffer to successfully break next block
+    KeyBind.keyBind('key.attack', true);    // Start mining
+    Client.waitTick(time);                  // Wait until block(s) break
+    KeyBind.keyBind('key.attack', false);   // Stop mining
     //Chat.log("LOG: Stop - mine()");
 }
 
@@ -211,22 +212,22 @@ walkTo();
 while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
 
     while (pos.z < endZ) {                                                      // While in row
-        mine(rowDirection, 0, tool = leafTool, wait = leafBreakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+        mine(rowDirection, 0, tool = leafTool, time = leafBreakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x, pos.z + width);                                               // Walk to next tree in row
-        mine(rowDirection, 35, tool = logTool, wait = breakTime * 2);               // Chop first two blocks of tree
+        mine(rowDirection, 35, tool = logTool, time = breakTime * 2);               // Chop first two blocks of tree
         walkTo(pos.x, pos.z + 1);                                                   // Walk exactly under floating tree
-        mine(rowDirection, -90, tool = logTool, wait = breakTime * treeHeight);     // Chop remaining tree
+        mine(rowDirection, -90, tool = logTool, time = breakTime * treeHeight);     // Chop remaining tree
         replant(rowDirection);                                                      // Replant tree
     }
 
     if (pos.x == endX) {                                // If at last row
         break;                                              // Break
     } else if (pos.x > endX) {                          // If not at last row
-        mine(turnDirection, 0, tool = leafTool, wait = leafBreakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+        mine(turnDirection, 0, tool = leafTool, time = leafBreakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x - width, pos.z);                       // Walk to first tree in next row
-        mine(turnDirection, 35, tool = logTool, wait = breakTime * 2);  // Chop first two blocks of tree
+        mine(turnDirection, 35, tool = logTool, time = breakTime * 2);  // Chop first two blocks of tree
         walkTo(pos.x - 1, pos.z);                           // Walk under first tree in next row
-        mine(turnDirection, -90, tool = logTool, wait = breakTime * treeHeight); // Chop remaining tree
+        mine(turnDirection, -90, tool = logTool, time = breakTime * treeHeight); // Chop remaining tree
         replant(turnDirection);                             // Replant tree
     } else {                                            // Else anything else
         Chat.log("ERROR: Navigation Error!");               // Error catcher
@@ -235,22 +236,22 @@ while (pos.x > endX || pos.z < endZ) {              // While in confines of farm
     flipDirection = rowDirection + 180;                 // Assign opposite direction
 
     while (pos.z > startZ) {                            // While facing opposite direction from first row
-        mine(flipDirection, 0, tool = leafTool, wait = leafBreakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+        mine(flipDirection, 0, tool = leafTool, time = leafBreakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x, pos.z - width);                       // Walk to first tree in next row
-        mine(flipDirection, 35, tool = logTool, wait = breakTime * 2);  // Chop first two blocks of tree
+        mine(flipDirection, 35, tool = logTool, time = breakTime * 2);  // Chop first two blocks of tree
         walkTo(pos.x, pos.z - 1);                           // Walk under first tree in next row
-        mine(flipDirection, -90, tool = logTool, wait = breakTime * treeHeight); // Chop remaining tree
+        mine(flipDirection, -90, tool = logTool, time = breakTime * treeHeight); // Chop remaining tree
         replant(flipDirection);                             // Replant tree
     }
 
     if (pos.x == endX) {                                // If at last row
         break;                                              // Break
     } else if (pos.x > endX) {                          // If not at last row
-        mine(turnDirection, 0, tool = leafTool, wait = leafBreakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+        mine(turnDirection, 0, tool = leafTool, time = leafBreakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
         walkTo(pos.x - width, pos.z);                       // Walk to first tree in next row
-        mine(turnDirection, 35, tool = logTool, wait = breakTime * 2);  // Chop first two blocks of tree
+        mine(turnDirection, 35, tool = logTool, time = breakTime * 2);  // Chop first two blocks of tree
         walkTo(pos.x - 1, pos.z);                           // Walk under first tree in next row
-        mine(turnDirection, -90, tool = logTool, wait = breakTime * treeHeight); // Chop remaining tree
+        mine(turnDirection, -90, tool = logTool, time = breakTime * treeHeight); // Chop remaining tree
         replant(rowDirection);                              // Replant tree
     } else {                                            // Else anything else
         Chat.log("ERROR: Navigation Error!");               // Error catcher
