@@ -6,12 +6,12 @@
     @contact BattleDog249#9512
 */
 
-// Variable used to set time in ticks it takes to break a leaf block with selected unenchanted tool + 7 for buffer
-leafBreakTime = 13;
+// Variable used to set time in ticks it takes to break a leaf block with selected unenchanted tool + 6 for buffer
+leafBreakTime = 12;
 
-// Variable used to set time in ticks it takes to break a log with selected unenchanted tool + 5 for buffer
-// Nothing: 65, Wooden: 35, Stone: 20, Iron: 15, Diamond: 13, Netherite: 12, Gold: 10
-logBreakTime = 15;
+// Variable used to set time in ticks it takes to break a log with selected unenchanted tool + 6 for buffer
+// Nothing: 66, Wooden: 36, Stone: 21, Iron: 16, Diamond: 14, Netherite: 13, Gold: 11
+logBreakTime = 16;
 
 // Set to the maximum height of tree; should be 6 for oak I think
 // The - 2 is to subtract the two bottom blocks already broken by the bot, so only change the first number if need be!
@@ -51,11 +51,11 @@ sapling = "minecraft:oak_sapling";
 //startX = 3247.5;
 //startZ = -2396.5;
 // First level of Mehri tree farm
-startX = 3217.5;
-startZ = -2397.5;
-// Second level of Mehri tree farm
 //startX = 3247.5;
-//startZ = -2396.5;
+//startZ = -2397.5;
+// Second level of Mehri tree farm
+startX = 3247.5;
+startZ = -2396.5;
 // Third level of Mehri tree farm
 //startX = 3247.5;
 //startZ = -2395.5;
@@ -71,11 +71,11 @@ startZ = -2397.5;
 //endX = -132.5;
 //endZ = 6.5;
 // First level of Mehri tree farm
-endX = 3172.5;
-endZ = -2332.5;
-// Second level of Mehri tree farm
 //endX = 3172.5;
-//endZ = -2331.5;
+//endZ = -2332.5;
+// Second level of Mehri tree farm
+endX = 3172.5;
+endZ = -2331.5;
 // Third level of Mehri tree farm
 //endX = 3172.5;
 //endZ = -2330.5;
@@ -184,7 +184,7 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
 // tool: Set tool used to mine
 // time: Time in ticks for bot to mine
 // wait: Time in ticks for buffer, useful with anticheat issues
-function interact(yaw, pitch, action, tool, time = 1, wait = 1) {
+function interact(yaw, pitch, action, tool, time = 1, wait = 5) {
     //Chat.log("LOG: Start - mine()");
     pick(tool);                             // Equip tool to mine desired blocks
     Player.getPlayer().lookAt(yaw, pitch);  // Look in set direction
@@ -212,7 +212,7 @@ while (pos.x > endX || pos.z < endZ) {                                          
         interact(rowDirection, 35, action = chop, tool = logTool, time = breakBottom);  // Chop first two blocks of tree
         walkTo(pos.x, pos.z + 1);                                                       // Walk exactly under floating tree
         interact(rowDirection, -90, action = chop, tool = logTool, time = breakTop);    // Chop remaining tree
-        interact(rowDirection, 0, action = plant, tool = sapling);                      // Replant tree
+        interact(rowDirection, 90, action = plant, tool = sapling);                     // Replant tree
     }
 
     if (pos.x == endX) {                                                            // If at last row
@@ -223,7 +223,7 @@ while (pos.x > endX || pos.z < endZ) {                                          
         interact(turnDirection, 35, action = chop, tool = logTool, time = breakBottom); // Chop first two blocks of tree
         walkTo(pos.x - 1, pos.z);                                                       // Walk under first tree in next row
         interact(turnDirection, -90, action = chop, tool = logTool, time = breakTop);   // Chop remaining tree
-        interact(turnDirection, 0, action = plant, tool = sapling);                     // Replant tree
+        interact(turnDirection, 90, action = plant, tool = sapling);                    // Replant tree
     } else {                                                                        // Else anything else
         Chat.log("ERROR: Navigation Error!");                                           // Error catcher
     }
@@ -236,7 +236,7 @@ while (pos.x > endX || pos.z < endZ) {                                          
         interact(flipDirection, 35, action = chop, tool = logTool, time = breakBottom); // Chop first two blocks of tree
         walkTo(pos.x, pos.z - 1);                                                       // Walk under first tree in next row
         interact(flipDirection, -90, action = chop, tool = logTool, time = breakTop);   // Chop remaining tree
-        interact(flipDirection, 0, action = plant, tool = sapling);                     // Replant tree
+        interact(flipDirection, 90, action = plant, tool = sapling);                    // Replant tree
     }
 
     if (pos.x == endX) {                                                            // If at last row
@@ -247,7 +247,7 @@ while (pos.x > endX || pos.z < endZ) {                                          
         interact(turnDirection, 35, action = chop, tool = logTool, time = breakBottom); // Chop first two blocks of tree
         walkTo(pos.x - 1, pos.z);                                                       // Walk under first tree in next row
         interact(turnDirection, -90, action = chop, tool = logTool, time = breakTop);   // Chop remaining tree
-        interact(turnDirection, 0, action = plant, tool = sapling);                     // Replant tree
+        interact(turnDirection, 90, action = plant, tool = sapling);                    // Replant tree
     } else {                                                                        // Else anything else
         Chat.log("ERROR: Navigation Error!");                                           // Error catcher
     }
