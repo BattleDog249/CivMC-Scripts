@@ -6,6 +6,8 @@
     @contact BattleDog249#9512
 */
 
+buffer = 6;
+
 // Variable used to set time in ticks it takes to break a leaf block with selected unenchanted tool + 6 for buffer
 leafBreakTime = 12;
 
@@ -54,14 +56,14 @@ sapling = "minecraft:oak_sapling";
 //startX = 3247.5;
 //startZ = -2397.5;
 // Second level of Mehri tree farm
-startX = 3247.5;
-startZ = -2396.5;
+//startX = 3247.5;
+//startZ = -2396.5;
 // Third level of Mehri tree farm
 //startX = 3247.5;
 //startZ = -2395.5;
 // Fourth level of Mehri tree farm
-//startX = 3247.5;
-//startZ = -2394.5;
+startX = 3247.5;
+startZ = -2394.5;
 // Fifth level of Mehri tree farm
 //startX = 3247.5;
 //startZ = -2393.5;
@@ -74,14 +76,14 @@ startZ = -2396.5;
 //endX = 3172.5;
 //endZ = -2332.5;
 // Second level of Mehri tree farm
-endX = 3172.5;
-endZ = -2331.5;
+//endX = 3172.5;
+//endZ = -2331.5;
 // Third level of Mehri tree farm
 //endX = 3172.5;
 //endZ = -2330.5;
 // Fourth level of Mehri tree farm
-//endX = 3172.5;
-//endZ = -2329.5;
+endX = 3172.5;
+endZ = -2329.5;
 // Fifth level of Mehri tree farm
 //endX = 3172.5;
 //endZ = -2328.5;
