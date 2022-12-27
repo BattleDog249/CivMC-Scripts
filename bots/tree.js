@@ -25,16 +25,6 @@ treeHeight = 6;
 // Set to (in blocks) distance between trees
 width = 4;
 
-breakBottom = logBreakTime * 2;
-breakTop = logBreakTime * (treeHeight - 2);
-breakLeaves = leafBreakTime * width;
-
-chop = 'key.attack';
-plant = 'key.use';
-
-// Grab current coordinates
-pos = Player.getPlayer().getPos();
-
 // Set to tools to be used in harvest
 logTool = "minecraft:iron_axe";
 leafTool = "minecraft:stick"
@@ -87,6 +77,16 @@ endZ = 4.5;
 // Fifth level of tree farm
 //endX = 3172.5;
 //endZ = -2328.5;
+
+breakBottom = logBreakTime * 2;
+breakTop = logBreakTime * (treeHeight - 2);
+breakLeaves = leafBreakTime * width;
+
+chop = 'key.attack';
+plant = 'key.use';
+
+// Grab current coordinates
+pos = Player.getPlayer().getPos();
 
 // Function to equip a given item on the hotbar if located in inventory
 // name: "minecraft:itemname"
