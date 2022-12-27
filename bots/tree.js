@@ -27,7 +27,7 @@ width = 4;
 
 // Set to tools to be used in harvest
 logTool = "minecraft:iron_axe";
-leafTool = "minecraft:stick"
+leafTool = "minecraft:stick";
 
 // Set to sapling type to replant
 sapling = "minecraft:oak_sapling";
@@ -35,16 +35,16 @@ sapling = "minecraft:oak_sapling";
 // Set to direction rows of trees in farm travel
 // lat: Rows go North/South
 // long: Rows go East/West
-//direction = "lat";
-direction = "long";
+direction = "lat";
+//direction = "long";
 
 // Assign to exact coords of starting block, typically lodestone
 // Testing coords
-startX = -104.5;
-startZ = 14.5;
+//startX = -104.5;
+//startZ = 14.5;
 // First level of tree farm
-//startX = 3247.5;
-//startZ = -2397.5;
+startX = 3247.5;
+startZ = -2397.5;
 // Second level of tree farm
 //startX = 3247.5;
 //startZ = -2396.5;
@@ -60,11 +60,11 @@ startZ = 14.5;
 
 // Assign coords of last tree opposite of starting coords
 // Testing coords
-endX = -94.5;
-endZ = 4.5;
+//endX = -94.5;
+//endZ = 4.5;
 // First level of tree farm
-//endX = 3172.5;
-//endZ = -2332.5;
+endX = 3172.5;
+endZ = -2332.5;
 // Second level of tree farm
 //endX = 3172.5;
 //endZ = -2331.5;
