@@ -42,9 +42,12 @@ leafTool = "minecraft:stick"
 // Set to sapling type to replant
 sapling = "minecraft:oak_sapling";
 
+//direction = "lat";
+direction = "long"
+
 // Assign to exact coords of starting block, typically lodestone
 // Testing coords
-startX = -94.5;
+startX = -104.5;
 startZ = 14.5;
 // First level of tree farm
 //startX = 3247.5;
@@ -64,7 +67,7 @@ startZ = 14.5;
 
 // Assign coords of last tree opposite of starting coords
 // Testing coords
-endX = -104.5;
+endX = -94.5;
 endZ = 4.5;
 // First level of tree farm
 //endX = 3172.5;
@@ -225,6 +228,12 @@ function chopTree(yaw) {
     //Chat.log("LOG: Stop - chopTree(yaw: " + yaw + ")");
 }
 
+/*
+function chopRow(yaw, ) {
+
+}
+*/
+
 Chat.log("Starting!");
 
 // Center bot on starting block
@@ -232,129 +241,259 @@ walkTo();
 
 // North to South starting direction, West turns
 // If startX > endX && startZ < endZ
-if (startX > endX && startZ < endZ) {           // NS, turn west
-    rowYaw = 0;
-    turnYaw = 90;
-    oppositeYaw = 180;
-    while (pos.x > endX || pos.z < endZ) {                                          // While in confines of farm
-
-        while (pos.z < endZ) {                                                          // While in row
-            chopTree(rowYaw);
-        }
+if (direction == "lat") {
+    if (startX > endX && startZ < endZ) {           // NS, turn west
+        Chat.log("LOG: Starting NS-W");
+        rowYaw = 0;
+        turnYaw = 90;
+        oppositeYaw = 180;
+        while (pos.x > endX || pos.z < endZ) {                                          // While in confines of farm
     
-        if (pos.x == endX) {                                                            // If at last row
-            break;                                                                          // Break
-        } else if (pos.x > endX) {                                                      // Else if not at last row
-            chopTree(turnYaw);
-        } else {                                                                        // Else anything else
-            Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            while (pos.z < endZ) {                                                          // While in row
+                chopTree(rowYaw);
+            }
+        
+            if (pos.x == endX) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.x > endX) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        
+            while (pos.z > startZ) {                                                        // While facing opposite direction from first row
+                chopTree(oppositeYaw);
+            }
+        
+            if (pos.x == endX) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.x > endX) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
         }
+    } else if (startX < endX && startZ < endZ) {    // NS, turn east
+        Chat.log("LOG: Starting NS-E");
+        rowYaw = 0;
+        turnYaw = 270;
+        oppositeYaw = 180;
+        while (pos.x < endX || pos.z < endZ) {                                          // While in confines of farm
     
-        while (pos.z > startZ) {                                                        // While facing opposite direction from first row
-            chopTree(oppositeYaw);
+            while (pos.z < endZ) {                                                          // While in row
+                chopTree(rowYaw);
+            }
+        
+            if (pos.x == endX) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.x < endX) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        
+            while (pos.z > startZ) {                                                        // While facing opposite direction from first row
+                chopTree(oppositeYaw);
+            }
+        
+            if (pos.x == endX) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.x < endX) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
         }
+    } else if (startX < endX && startZ > endZ) {    // SN, turn east
+        Chat.log("LOG: Starting SN-E");
+        rowYaw = 180;
+        turnYaw = 270;
+        oppositeYaw = 0;
+        while (pos.x < endX || pos.z > endZ) {                                          // While in confines of farm
     
-        if (pos.x == endX) {                                                            // If at last row
-            break;                                                                          // Break
-        } else if (pos.x > endX) {                                                      // Else if not at last row
-            chopTree(turnYaw);
-        } else {                                                                        // Else anything else
-            Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            while (pos.z > endZ) {                                                          // While in row
+                chopTree(rowYaw);
+            }
+        
+            if (pos.x == endX) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.x < endX) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        
+            while (pos.z < startZ) {                                                        // While facing opposite direction from first row
+                chopTree(oppositeYaw);
+            }
+        
+            if (pos.x == endX) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.x < endX) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        }
+    } else if (startX > endX && startZ > endZ) {    // SN, turn west
+        Chat.log("LOG: Starting SN-W");
+        rowYaw = 180;
+        turnYaw = 90;
+        oppositeYaw = 0;
+        while (pos.x > endX || pos.z > endZ) {                                          // While in confines of farm
+    
+            while (pos.z > endZ) {                                                          // While in row
+                chopTree(rowYaw);
+            }
+        
+            if (pos.x == endX) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.x > endX) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        
+            while (pos.z < startZ) {                                                        // While facing opposite direction from first row
+                chopTree(oppositeYaw);
+            }
+        
+            if (pos.x == endX) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.x > endX) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
         }
     }
-} else if (startX < endX && startZ < endZ) {    // NS, turn east
-    Chat.log("LOG: Starting NS-E");
-    rowYaw = 0;
-    turnYaw = 270;
-    oppositeYaw = 180;
-    while (pos.x < endX || pos.z < endZ) {                                          // While in confines of farm
-
-        while (pos.z < endZ) {                                                          // While in row
-            chopTree(rowYaw);
-        }
+} else if (direction == "long") {       //EW Rows, UNTESTED & NOT WORKING
+    if (startX > endX && startZ < endZ) {           // EW, turn south WORKING
+        Chat.log("LOG: Starting EW-S");
+        rowYaw = 90;
+        turnYaw = 0;
+        oppositeYaw = 270;
+        while (pos.x > endX || pos.z < endZ) {                                          // While in confines of farm
     
-        if (pos.x == endX) {                                                            // If at last row
-            break;                                                                          // Break
-        } else if (pos.x < endX) {                                                      // Else if not at last row
-            chopTree(turnYaw);
-        } else {                                                                        // Else anything else
-            Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            while (pos.x > endX) {                                                          // While in row
+                chopTree(rowYaw);
+            }
+        
+            if (pos.z == endZ) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.z < endZ) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        
+            while (pos.x < startX) {                                                        // While facing opposite direction from first row
+                chopTree(oppositeYaw);
+            }
+        
+            if (pos.z == endZ) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.z < endZ) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
         }
+    } else if (startX < endX && startZ < endZ) {    // WE, turn south WORKING
+        Chat.log("LOG: Starting WE-S");
+        rowYaw = 270;
+        turnYaw = 0;
+        oppositeYaw = 90;
+        while (pos.x < endX || pos.z < endZ) {                                          // While in confines of farm
     
-        while (pos.z > startZ) {                                                        // While facing opposite direction from first row
-            chopTree(oppositeYaw);
+            while (pos.x < endX) {                                                          // While in row
+                chopTree(rowYaw);
+            }
+        
+            if (pos.z == endZ) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.z < endZ) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        
+            while (pos.x > startX) {                                                        // While facing opposite direction from first row
+                chopTree(oppositeYaw);
+            }
+        
+            if (pos.z == endZ) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.z < endZ) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
         }
+    } else if (startX < endX && startZ > endZ) {    // WE, turn north WORKING
+        Chat.log("LOG: Starting WE-N");
+        rowYaw = 270;
+        turnYaw = 180;
+        oppositeYaw = 90;
+        while (pos.x < endX || pos.z > endZ) {                                          // While in confines of farm
     
-        if (pos.x == endX) {                                                            // If at last row
-            break;                                                                          // Break
-        } else if (pos.x < endX) {                                                      // Else if not at last row
-            chopTree(turnYaw);
-        } else {                                                                        // Else anything else
-            Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            while (pos.x < endX) {                                                          // While in row
+                chopTree(rowYaw);
+            }
+        
+            if (pos.z == endZ) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.z > endZ) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        
+            while (pos.x > startX) {                                                        // While facing opposite direction from first row
+                chopTree(oppositeYaw);
+            }
+        
+            if (pos.z == endZ) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.z > endZ) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        }
+    } else if (startX > endX && startZ > endZ) {    // EW, turn north WORKING
+        Chat.log("LOG: Starting EW-N");
+        rowYaw = 90;
+        turnYaw = 180;
+        oppositeYaw = 270;
+        while (pos.x > endX || pos.z > endZ) {                                          // While in confines of farm
+    
+            while (pos.x > endX) {                                                          // While in row
+                chopTree(rowYaw);
+            }
+        
+            if (pos.z == endZ) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.z > endZ) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
+        
+            while (pos.x < startX) {                                                        // While facing opposite direction from first row
+                chopTree(oppositeYaw);
+            }
+        
+            if (pos.z == endZ) {                                                            // If at last row
+                break;                                                                          // Break
+            } else if (pos.z > endZ) {                                                      // Else if not at last row
+                chopTree(turnYaw);
+            } else {                                                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            }
         }
     }
-} else if (startX < endX && startZ > endZ) {    // SN, turn east
-    Chat.log("LOG: Starting SN-E");
-    rowYaw = 180;
-    turnYaw = 270;
-    oppositeYaw = 0;
-    while (pos.x < endX || pos.z > endZ) {                                          // While in confines of farm
+} else {
 
-        while (pos.z > endZ) {                                                          // While in row
-            chopTree(rowYaw);
-        }
-    
-        if (pos.x == endX) {                                                            // If at last row
-            break;                                                                          // Break
-        } else if (pos.x < endX) {                                                      // Else if not at last row
-            chopTree(turnYaw);
-        } else {                                                                        // Else anything else
-            Chat.log("ERROR: Navigation Error!");                                           // Error catcher
-        }
-    
-        while (pos.z < startZ) {                                                        // While facing opposite direction from first row
-            chopTree(oppositeYaw);
-        }
-    
-        if (pos.x == endX) {                                                            // If at last row
-            break;                                                                          // Break
-        } else if (pos.x < endX) {                                                      // Else if not at last row
-            chopTree(turnYaw);
-        } else {                                                                        // Else anything else
-            Chat.log("ERROR: Navigation Error!");                                           // Error catcher
-        }
-    }
-} else if (startX > endX && startZ > endZ) {    // SN, turn west
-    Chat.log("LOG: Starting SN-W");
-    rowYaw = 180;
-    turnYaw = 90;
-    oppositeYaw = 0;
-    while (pos.x > endX || pos.z > endZ) {                                          // While in confines of farm
-
-        while (pos.z > endZ) {                                                          // While in row
-            chopTree(rowYaw);
-        }
-    
-        if (pos.x == endX) {                                                            // If at last row
-            break;                                                                          // Break
-        } else if (pos.x > endX) {                                                      // Else if not at last row
-            chopTree(turnYaw);
-        } else {                                                                        // Else anything else
-            Chat.log("ERROR: Navigation Error!");                                           // Error catcher
-        }
-    
-        while (pos.z < startZ) {                                                        // While facing opposite direction from first row
-            chopTree(oppositeYaw);
-        }
-    
-        if (pos.x == endX) {                                                            // If at last row
-            break;                                                                          // Break
-        } else if (pos.x > endX) {                                                      // Else if not at last row
-            chopTree(turnYaw);
-        } else {                                                                        // Else anything else
-            Chat.log("ERROR: Navigation Error!");                                           // Error catcher
-        }
-    }
 }
-
 Chat.log("Done!");
