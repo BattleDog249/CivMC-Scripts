@@ -42,8 +42,11 @@ leafTool = "minecraft:stick"
 // Set to sapling type to replant
 sapling = "minecraft:oak_sapling";
 
+// Set to direction rows of trees in farm travel
+// lat: Rows go North/South
+// long: Rows go East/West
 //direction = "lat";
-direction = "long"
+direction = "long";
 
 // Assign to exact coords of starting block, typically lodestone
 // Testing coords
@@ -229,51 +232,64 @@ function chopTree(yaw) {
 }
 
 /*
-function chopRow(yaw, ) {
+function chopRow(tx, tz, yaw) {
+    pos = Player.getPlayer().getPos();
+    while (pos.z < endZ) {                                                          // While in row
+                chopTree(rowYaw);
+            }
 
+    for (rx) {
+
+    }
+}
+
+if (NS or EW) {
+    for (let c = parseInt(pos.x/y); c +/- width; c++/--) {
+    
 }
 */
 
-Chat.log("Starting!");
+Chat.log("Starting tree bot!");
+Chat.log("Starting at X: " + startX + ", Z: " + startZ);
+Chat.log("Ending at X: " + endX + ", Z: " + endZ);
+Chat.log("Row direction: " + direction);
+Chat.log("Tree height: " + treeHeight);
 
-// Center bot on starting block
-walkTo();
+walkTo(startX, startZ);
 
-// North to South starting direction, West turns
-// If startX > endX && startZ < endZ
 if (direction == "lat") {
-    if (startX > endX && startZ < endZ) {           // NS, turn west
+    if (startX > endX && startZ < endZ) {
         Chat.log("LOG: Starting NS-W");
         rowYaw = 0;
         turnYaw = 90;
         oppositeYaw = 180;
-        while (pos.x > endX || pos.z < endZ) {                                          // While in confines of farm
+        while (pos.x > endX || pos.z < endZ) {          // While in confines of farm
     
-            while (pos.z < endZ) {                                                          // While in row
-                chopTree(rowYaw);
+            while (pos.z < endZ) {                          // While not at the end of the given oriented row
+                chopTree(rowYaw);                               // Chop trees
             }
         
-            if (pos.x == endX) {                                                            // If at last row
-                break;                                                                          // Break
-            } else if (pos.x > endX) {                                                      // Else if not at last row
+            if (pos.x == endX) {                            // If at last row of NS farm
+                break;                                          // Break
+            } else if (pos.x > endX) {                      // Else if not at last row
                 chopTree(turnYaw);
-            } else {                                                                        // Else anything else
-                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            } else {                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");
             }
         
-            while (pos.z > startZ) {                                                        // While facing opposite direction from first row
+            while (pos.z > startZ) {                        // While facing opposite direction from first row
                 chopTree(oppositeYaw);
             }
         
-            if (pos.x == endX) {                                                            // If at last row
-                break;                                                                          // Break
-            } else if (pos.x > endX) {                                                      // Else if not at last row
+            if (pos.x == endX) {                            // If at last row
+                break;                                          // Break
+            } else if (pos.x > endX) {                      // Else if not at last row
                 chopTree(turnYaw);
-            } else {                                                                        // Else anything else
-                Chat.log("ERROR: Navigation Error!");                                           // Error catcher
+            } else {                                        // Else anything else
+                Chat.log("ERROR: Navigation Error!");
             }
         }
-    } else if (startX < endX && startZ < endZ) {    // NS, turn east
+    } else if (startX < endX && startZ < endZ) {
         Chat.log("LOG: Starting NS-E");
         rowYaw = 0;
         turnYaw = 270;
@@ -304,7 +320,7 @@ if (direction == "lat") {
                 Chat.log("ERROR: Navigation Error!");                                           // Error catcher
             }
         }
-    } else if (startX < endX && startZ > endZ) {    // SN, turn east
+    } else if (startX < endX && startZ > endZ) {
         Chat.log("LOG: Starting SN-E");
         rowYaw = 180;
         turnYaw = 270;
@@ -335,7 +351,7 @@ if (direction == "lat") {
                 Chat.log("ERROR: Navigation Error!");                                           // Error catcher
             }
         }
-    } else if (startX > endX && startZ > endZ) {    // SN, turn west
+    } else if (startX > endX && startZ > endZ) {
         Chat.log("LOG: Starting SN-W");
         rowYaw = 180;
         turnYaw = 90;
@@ -367,8 +383,8 @@ if (direction == "lat") {
             }
         }
     }
-} else if (direction == "long") {       //EW Rows, UNTESTED & NOT WORKING
-    if (startX > endX && startZ < endZ) {           // EW, turn south WORKING
+} else if (direction == "long") {
+    if (startX > endX && startZ < endZ) {
         Chat.log("LOG: Starting EW-S");
         rowYaw = 90;
         turnYaw = 0;
@@ -399,7 +415,7 @@ if (direction == "lat") {
                 Chat.log("ERROR: Navigation Error!");                                           // Error catcher
             }
         }
-    } else if (startX < endX && startZ < endZ) {    // WE, turn south WORKING
+    } else if (startX < endX && startZ < endZ) {
         Chat.log("LOG: Starting WE-S");
         rowYaw = 270;
         turnYaw = 0;
@@ -430,7 +446,7 @@ if (direction == "lat") {
                 Chat.log("ERROR: Navigation Error!");                                           // Error catcher
             }
         }
-    } else if (startX < endX && startZ > endZ) {    // WE, turn north WORKING
+    } else if (startX < endX && startZ > endZ) {
         Chat.log("LOG: Starting WE-N");
         rowYaw = 270;
         turnYaw = 180;
@@ -461,7 +477,7 @@ if (direction == "lat") {
                 Chat.log("ERROR: Navigation Error!");                                           // Error catcher
             }
         }
-    } else if (startX > endX && startZ > endZ) {    // EW, turn north WORKING
+    } else if (startX > endX && startZ > endZ) {
         Chat.log("LOG: Starting EW-N");
         rowYaw = 90;
         turnYaw = 180;
@@ -494,6 +510,6 @@ if (direction == "lat") {
         }
     }
 } else {
-
+    Chat.log("ERROR: Direction value must be \"lat\" or \"long\"!");
 }
 Chat.log("Done!");
