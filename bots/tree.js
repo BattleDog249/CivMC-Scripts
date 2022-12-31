@@ -30,7 +30,7 @@ width = 4;
 // Set to (in blocks) distance between rows
 // Mehri Oak/Birch: 4
 // Mehri Jungle: 5
-rowWidth = 5;
+rowWidth = 4;
 
 // Set to tools to be used in harvest
 logTool = "minecraft:iron_axe";
@@ -50,7 +50,7 @@ direction = "lat";
 //startX = -104.5;
 //startZ = 14.5;
 // First level of tree farm
-startX = 3217.5;
+startX = 3247.5;
 startZ = -2397.5;
 // Second level of tree farm
 //startX = 3247.5;
