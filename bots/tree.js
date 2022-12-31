@@ -20,10 +20,17 @@ logBreakTime = buffer + 10;
 
 // Set to the maximum height of tree
 // Oak: 6, Birch: 7
+// Mehri Jungle: 6
 treeHeight = 6;
 
-// Set to (in blocks) distance between trees
+// Set to (in blocks) distance between trees in a row
+// Mehri Farms: 4
 width = 4;
+
+// Set to (in blocks) distance between rows
+// Mehri Oak/Birch: 4
+// Mehri Jungle: 5
+rowWidth = 5;
 
 // Set to tools to be used in harvest
 logTool = "minecraft:iron_axe";
@@ -43,7 +50,7 @@ direction = "lat";
 //startX = -104.5;
 //startZ = 14.5;
 // First level of tree farm
-startX = 3247.5;
+startX = 3217.5;
 startZ = -2397.5;
 // Second level of tree farm
 //startX = 3247.5;
@@ -199,7 +206,8 @@ function interact(yaw, pitch, action, tool, time = 1, wait = 5) {
 
 // Function for harvesting and replanting an entire tree
 // yaw: Cardinal direction of tree to be harvested
-function chopTree(yaw) {
+// width: Distance between trees
+function chopTree(yaw, width) {
     //Chat.log("LOG: Start - chopTree(yaw: " + yaw + ")");
     interact(yaw, 0, action = chop, tool = leafTool, time = breakLeaves);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
     pos = Player.getPlayer().getPos();                                          // Grab current coordinates
@@ -249,13 +257,13 @@ if (direction == "lat") {
     
             // Harvest whole row while not at end of row
             while (pos.z < endZ) {
-                chopTree(rowYaw);
+                chopTree(rowYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.x > endX) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.x == endX) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -266,13 +274,13 @@ if (direction == "lat") {
         
             // Harvest whole opposite row while not at end of row
             while (pos.z > startZ) {
-                chopTree(oppositeYaw);
+                chopTree(oppositeYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.x > endX) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.x == endX) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -290,13 +298,13 @@ if (direction == "lat") {
     
             // Harvest whole row while not at end of row
             while (pos.z < endZ) {
-                chopTree(rowYaw);
+                chopTree(rowYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.x < endX) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.x == endX) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -307,13 +315,13 @@ if (direction == "lat") {
         
             // Harvest whole opposite row while not at end of row
             while (pos.z > startZ) {
-                chopTree(oppositeYaw);
+                chopTree(oppositeYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.x < endX) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.x == endX) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -331,13 +339,13 @@ if (direction == "lat") {
     
             // Harvest whole row while not at end of row
             while (pos.z > endZ) {
-                chopTree(rowYaw);
+                chopTree(rowYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.x < endX) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.x == endX) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -348,13 +356,13 @@ if (direction == "lat") {
         
             // Harvest whole opposite row while not at end of row
             while (pos.z < startZ) {
-                chopTree(oppositeYaw);
+                chopTree(oppositeYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.x < endX) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.x == endX) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -372,13 +380,13 @@ if (direction == "lat") {
     
             // Harvest whole row while not at end of row
             while (pos.z > endZ) {
-                chopTree(rowYaw);
+                chopTree(rowYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.x > endX) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.x == endX) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -389,13 +397,13 @@ if (direction == "lat") {
         
             // Harvest whole opposite row while not at end of row
             while (pos.z < startZ) {
-                chopTree(oppositeYaw);
+                chopTree(oppositeYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.x > endX) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.x == endX) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -415,13 +423,13 @@ if (direction == "lat") {
     
             // Harvest whole row while not at end of row
             while (pos.x > endX) {
-                chopTree(rowYaw);
+                chopTree(rowYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.z < endZ) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.z == endZ) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -432,13 +440,13 @@ if (direction == "lat") {
         
             // Harvest whole opposite row while not at end of row
             while (pos.x < startX) {
-                chopTree(oppositeYaw);
+                chopTree(oppositeYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.z < endZ) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.z == endZ) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -456,13 +464,13 @@ if (direction == "lat") {
     
             // Harvest whole row while not at end of row
             while (pos.x < endX) {
-                chopTree(rowYaw);
+                chopTree(rowYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.z < endZ) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.z == endZ) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -473,13 +481,13 @@ if (direction == "lat") {
         
             // Harvest whole opposite row while not at end of row
             while (pos.x > startX) {
-                chopTree(oppositeYaw);
+                chopTree(oppositeYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.z < endZ) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.z == endZ) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -497,13 +505,13 @@ if (direction == "lat") {
     
             // Harvest whole row while not at end of row
             while (pos.x < endX) {
-                chopTree(rowYaw);
+                chopTree(rowYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.z > endZ) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.z == endZ) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -514,13 +522,13 @@ if (direction == "lat") {
         
             // Harvest whole opposite row while not at end of row
             while (pos.x > startX) {
-                chopTree(oppositeYaw);
+                chopTree(oppositeYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.z > endZ) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.z == endZ) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -538,13 +546,13 @@ if (direction == "lat") {
     
             // Harvest whole row while not at end of row
             while (pos.x > endX) {
-                chopTree(rowYaw);
+                chopTree(rowYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.z > endZ) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.z == endZ) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
@@ -555,13 +563,13 @@ if (direction == "lat") {
         
             // Harvest whole opposite row while not at end of row
             while (pos.x < startX) {
-                chopTree(oppositeYaw);
+                chopTree(oppositeYaw, width);
             }
         
             // Check if at last row in farm
             if (pos.z > endZ) {
                 //Chat.log("LOG: Chopping next row!");
-                chopTree(turnYaw);
+                chopTree(turnYaw, rowWidth);
             } else if (pos.z == endZ) {
                 //Chat.log("LOG: Stopping at last row!");
                 break;
