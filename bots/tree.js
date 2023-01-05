@@ -255,7 +255,7 @@ function interact(yaw, pitch, action, time, wait = 5) {
 function chopTree(yaw, width) {
     //Chat.log("LOG: Start - chopTree(yaw: " + yaw + ")");
     pick(leafTool);
-    breakTime = parseInt(breakTimes("leaves"));
+    breakTime = breakTimes("leaves");
     interact(yaw, 0, action = chop, time = breakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
     pos = Player.getPlayer().getPos();                                          // Grab current coordinates
     
