@@ -185,7 +185,7 @@ function deposit(name, timeout = 500) {
 // yaw, pitch: angle the bot will look at
 // item: e.g. minecraft:diamond_axe for harvesting or minecraft:wheat_seeds etc. for replanting
 // pause: tick delay between each mouse key press, increase if the bot encounters anticheat issues
-function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1) {
+function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 5) {
 
     pos = Player.getPlayer().getPos();
 
@@ -198,16 +198,16 @@ function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 1) {
     Client.waitTick(pause);
     KeyBind.keyBind('key.use', true);
     Client.waitTick(pause);
-    KeyBind.keyBind('key.use', false);
-    Client.waitTick(pause);
+    //KeyBind.keyBind('key.use', false);
+    //Client.waitTick(pause);
     KeyBind.keyBind('key.forward', true);
     while ((parseInt(pos.z) == tz || parseInt(pos.x) == tx) && !(parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
         Player.getPlayer().lookAt(yaw, pitch);
-        Client.waitTick(pause);
-        KeyBind.keyBind('key.use', true);
-        Client.waitTick(pause);
-        KeyBind.keyBind('key.use', false);
-        Client.waitTick(pause);
+        //Client.waitTick(pause);
+        //KeyBind.keyBind('key.use', true);
+        //Client.waitTick(pause);
+        //KeyBind.keyBind('key.use', false);
+        //Client.waitTick(pause);
         pos = Player.getPlayer().getPos();
     }
     KeyBind.keyBind('key.forward', false);
