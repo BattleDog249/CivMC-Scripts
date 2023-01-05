@@ -6,17 +6,9 @@
     @contact BattleDog249#9512
 */
 
-// Variable used to set buffer time for block break variables, compensating for variances in time to break
-buffer = 6;
-
-// Variable used to set time in ticks it takes to break a leaf block with selected unenchanted hoe
-// Nothing: 6, Wooden: 3, Stone: 2, Iron: 1, Diamond: 1, Netherite: 1, Gold: 1
-// Shears: 1, Sword: 2
-leafBreakTime = buffer + 6;
-
-// Variable used to set time in ticks it takes to break a log with selected unenchanted axe
-// Nothing: 60, Wooden: 30, Stone: 15, Iron: 10, Diamond: 8, Netherite: 7, Gold: 5
-logBreakTime = buffer + 10;
+// Set to tools to be used in harvest
+logTool = "minecraft:netherite_axe";
+leafTool = "minecraft:stick";
 
 // Set to the maximum height of tree
 // Oak: 6, Birch: 7
@@ -32,10 +24,6 @@ width = 4;
 // Mehri Jungle: 5
 rowWidth = 4;
 
-// Set to tools to be used in harvest
-logTool = "minecraft:iron_axe";
-leafTool = "minecraft:stick";
-
 // Set to sapling type to replant
 sapling = "minecraft:oak_sapling";
 
@@ -47,11 +35,11 @@ direction = "lat";
 
 // Assign to exact coords of starting block, typically lodestone
 // Testing coords
-//startX = -104.5;
-//startZ = 14.5;
+startX = -122.5;
+startZ = 5.5;
 // First level of tree farm
-startX = 3247.5;
-startZ = -2397.5;
+//startX = 3247.5;
+//startZ = -2397.5;
 // Second level of tree farm
 //startX = 3247.5;
 //startZ = -2396.5;
@@ -67,11 +55,11 @@ startZ = -2397.5;
 
 // Assign coords of last tree opposite of starting coords
 // Testing coords
-//endX = -94.5;
-//endZ = 4.5;
+endX = -197.5;
+endZ = 80.5;
 // First level of tree farm
-endX = 3172.5;
-endZ = -2332.5;
+//endX = 3172.5;
+//endZ = -2332.5;
 // Second level of tree farm
 //endX = 3172.5;
 //endZ = -2331.5;
@@ -84,10 +72,6 @@ endZ = -2332.5;
 // Fifth level of tree farm
 //endX = 3172.5;
 //endZ = -2328.5;
-
-breakBottom = logBreakTime * 2;
-breakTop = logBreakTime * (treeHeight - 2);
-breakLeaves = leafBreakTime * width;
 
 chop = 'key.attack';
 plant = 'key.use';
@@ -186,22 +170,83 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
     return true;
 }
 
+// Function used to calculate break times for logs and leaves with currently selected item
+// block: Assign either log or leaves
+// buffer: Assign tick buffer to compensate for networking issues
+function breakTimes(block, buffer = 6) {
+    
+    inv = Player.openInventory();
+    slots = inv.getMap();
+    slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];
+    item = inv.getSlot(slot);
+
+    if (block == "log") {
+        if (item.getItemId().includes("_axe")) {
+            if (item.getItemId().includes("gold")) {
+                breakTime = 5;
+            } else if (item.getItemId().includes("netherite")) {
+                breakTime = 7;
+            } else if (item.getItemId().includes("diamond")) {
+                breakTime = 8;
+            } else if (item.getItemId().includes("iron")) {
+                Chat.log("Detected iron axe!");
+                breakTime = 10;
+            } else if (item.getItemId().includes("stone")) {
+                breakTime = 15;
+            } else if (item.getItemId().includes("wood")) {
+                breakTime = 30;
+            } else {
+                Chat.log("ERROR: Invalid tool detected!");
+            }
+        } else {
+            breakTime = 60;
+        }
+    } else if (block == "leaves") {
+        if (item.getItemId().includes("_hoe")) {
+            if (item.getItemId().includes("gold")) {
+                breakTime = 1;
+            } else if (item.getItemId().includes("netherite")) {
+                breakTime = 1;
+            } else if (item.getItemId().includes("diamond")) {
+                breakTime = 1;
+            } else if (item.getItemId().includes("iron")) {
+                breakTime = 1;
+            } else if (item.getItemId().includes("stone")) {
+                breakTime = 2;
+            } else if (item.getItemId().includes("wood")) {
+                breakTime = 3;
+            } else {
+                Chat.log("ERROR: Invalid tool detected!");
+            }
+        } else if (item.getItemId().includes("shears")) {
+            breakTime = 1;
+        } else if (item.getItemId().includes("_sword")) {
+            breakTime = 4;
+        } else {
+            breakTime = 6;
+        }
+    } else {
+        Chat.log("ERROR: Unsupported block type selected!");
+    }
+    breakTime += buffer;
+    return breakTime;
+}
+
 // Function to interact with blocks in a set direction for a set amount of time
 // yaw: Cardinal direction for bot to face
 // pitch: Vertical direction for bot to face
 // action: Key stroke, usually either key.attack (left-click) or key.use (right-click)
-// tool: Set tool used to mine
+// item: Set tool used to mine
 // time: Time in ticks for bot to mine
 // wait: Time in ticks for buffer, useful with anticheat issues
-function interact(yaw, pitch, action, tool, time = 1, wait = 5) {
-    //Chat.log("LOG: Start - mine()");
-    pick(tool);                             // Equip tool to mine desired blocks
+function interact(yaw, pitch, action, time, wait = 5) {
+    //Chat.log("LOG: Start - interact()");
     Player.getPlayer().lookAt(yaw, pitch);  // Look in set direction
     Client.waitTick(wait);                  // Wait buffer to successfully break next block
     KeyBind.keyBind(action, true);          // Start mining
     Client.waitTick(time);                  // Wait until block(s) break
     KeyBind.keyBind(action, false);         // Stop mining
-    //Chat.log("LOG: Stop - mine()");
+    //Chat.log("LOG: Stop - interact()");
 }
 
 // Function for harvesting and replanting an entire tree
@@ -209,33 +254,46 @@ function interact(yaw, pitch, action, tool, time = 1, wait = 5) {
 // width: Distance between trees
 function chopTree(yaw, width) {
     //Chat.log("LOG: Start - chopTree(yaw: " + yaw + ")");
-    interact(yaw, 0, action = chop, tool = leafTool, time = breakLeaves);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+    pick(leafTool);
+    breakTime = parseInt(breakTimes("leaves"));
+    interact(yaw, 0, action = chop, time = breakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
     pos = Player.getPlayer().getPos();                                          // Grab current coordinates
     
     // Walk to next tree in row
     if (yaw == 0) {                                                             // If facing south
         walkTo(pos.x, pos.z + width);                                               // Walk to tree
-        interact(yaw, 35, action = chop, tool = logTool, time = breakBottom);       // Chop first two blocks of tree
+        pick(logTool);
+        breakTime = breakTimes("log");
+        interact(yaw, 35, action = chop, time = breakTime * 2);       // Chop first two blocks of tree
         walkTo(pos.x, pos.z + 1);                                                   // Walk under tree
     } else if (yaw == 90) {                                                     // Else if facing west
         walkTo(pos.x - width, pos.z);                                               // Walk to tree
-        interact(yaw, 35, action = chop, tool = logTool, time = breakBottom);       // Chop first two blocks of tree
+        pick(logTool);
+        breakTime = breakTimes("log");
+        interact(yaw, 35, action = chop, time = breakTime * 2);       // Chop first two blocks of tree
         walkTo(pos.x - 1, pos.z);                                                   // Walk under tree
     } else if (yaw == 180) {                                                    // Else if facing north
         walkTo(pos.x, pos.z - width);                                               // Walk to tree
-        interact(yaw, 35, action = chop, tool = logTool, time = breakBottom);       // Chop first two blocks of tree
+        pick(logTool);
+        breakTime = breakTimes("log");
+        interact(yaw, 35, action = chop, time = breakTime * 2);       // Chop first two blocks of tree
         walkTo(pos.x, pos.z - 1);                                                   // Walk under tree
     } else if (yaw == 270) {                                                    // Else if facing east
         walkTo(pos.x + width, pos.z);                                               // Walk to tree
-        interact(yaw, 35, action = chop, tool = logTool, time = breakBottom);       // Chop first two blocks of tree
+        pick(logTool);
+        breakTime = breakTimes("log");
+        interact(yaw, 35, action = chop, time = breakTime * 2);       // Chop first two blocks of tree
         walkTo(pos.x + 1, pos.z);                                                   // Walk under tree
     } else {
         Chat.log("ERROR: Invalid yaw value for farm!");
         throw 'Exception';
     }
 
-    interact(yaw, -90, action = chop, tool = logTool, time = breakTop);         // Chop remaining tree
-    interact(yaw, 90, action = plant, tool = sapling);                          // Replant tree
+    pick(logTool);
+    breakTime = breakTimes("log");
+    interact(yaw, -90, action = chop, time = breakTime * (treeHeight - 2));         // Chop remaining tree
+    pick(sapling);
+    interact(yaw, 90, action = plant, time = 1);                          // Replant tree
     //Chat.log("LOG: Stop - chopTree(yaw: " + yaw + ")");
 }
 
