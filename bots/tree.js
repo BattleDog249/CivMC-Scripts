@@ -236,7 +236,6 @@ function breakTimes(block, buffer = 6) {
 // yaw: Cardinal direction for bot to face
 // pitch: Vertical direction for bot to face
 // action: Key stroke, usually either key.attack (left-click) or key.use (right-click)
-// item: Set tool used to mine
 // time: Time in ticks for bot to mine
 // wait: Time in ticks for buffer, useful with anticheat issues
 function interact(yaw, pitch, action, time, wait = 5) {
@@ -254,46 +253,40 @@ function interact(yaw, pitch, action, time, wait = 5) {
 // width: Distance between trees
 function chopTree(yaw, width) {
     //Chat.log("LOG: Start - chopTree(yaw: " + yaw + ")");
-    pick(leafTool);
-    breakTime = breakTimes("leaves");
-    interact(yaw, 0, action = chop, time = breakTime * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+    pick(leafTool);                                                             // Equip tool used to break leaves
+    interact(yaw, 0, action = chop, time = breakTimes("leaves") * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
     pos = Player.getPlayer().getPos();                                          // Grab current coordinates
     
     // Walk to next tree in row
     if (yaw == 0) {                                                             // If facing south
         walkTo(pos.x, pos.z + width);                                               // Walk to tree
-        pick(logTool);
-        breakTime = breakTimes("log");
-        interact(yaw, 35, action = chop, time = breakTime * 2);       // Chop first two blocks of tree
+        pick(logTool);                                                              // Equip logging tool
+        interact(yaw, 35, action = chop, time = breakTimes("log") * 2);             // Chop first two blocks of tree
         walkTo(pos.x, pos.z + 1);                                                   // Walk under tree
     } else if (yaw == 90) {                                                     // Else if facing west
         walkTo(pos.x - width, pos.z);                                               // Walk to tree
-        pick(logTool);
-        breakTime = breakTimes("log");
-        interact(yaw, 35, action = chop, time = breakTime * 2);       // Chop first two blocks of tree
+        pick(logTool);                                                              // Equip logging tool
+        interact(yaw, 35, action = chop, time = breakTimes("log") * 2);             // Chop first two blocks of tree
         walkTo(pos.x - 1, pos.z);                                                   // Walk under tree
     } else if (yaw == 180) {                                                    // Else if facing north
         walkTo(pos.x, pos.z - width);                                               // Walk to tree
-        pick(logTool);
-        breakTime = breakTimes("log");
-        interact(yaw, 35, action = chop, time = breakTime * 2);       // Chop first two blocks of tree
+        pick(logTool);                                                              // Equip logging tool
+        interact(yaw, 35, action = chop, time = breakTimes("log") * 2);             // Chop first two blocks of tree
         walkTo(pos.x, pos.z - 1);                                                   // Walk under tree
     } else if (yaw == 270) {                                                    // Else if facing east
         walkTo(pos.x + width, pos.z);                                               // Walk to tree
-        pick(logTool);
-        breakTime = breakTimes("log");
-        interact(yaw, 35, action = chop, time = breakTime * 2);       // Chop first two blocks of tree
+        pick(logTool);                                                              // Equip logging tool
+        interact(yaw, 35, action = chop, time = breakTimes("log") * 2);             // Chop first two blocks of tree
         walkTo(pos.x + 1, pos.z);                                                   // Walk under tree
-    } else {
+    } else {                                                                    // Else error catcher
         Chat.log("ERROR: Invalid yaw value for farm!");
         throw 'Exception';
     }
 
     pick(logTool);
-    breakTime = breakTimes("log");
-    interact(yaw, -90, action = chop, time = breakTime * (treeHeight - 2));         // Chop remaining tree
-    pick(sapling);
-    interact(yaw, 90, action = plant, time = 1);                          // Replant tree
+    interact(yaw, -90, action = chop, time = breakTimes("log") * (treeHeight - 2)); // Chop remaining tree
+    pick(sapling);                                                              // Equip sapling
+    interact(yaw, 90, action = plant, time = 1);                                // Replant tree
     //Chat.log("LOG: Stop - chopTree(yaw: " + yaw + ")");
 }
 
