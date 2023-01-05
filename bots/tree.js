@@ -286,12 +286,11 @@ function chopTree(yaw, width) {
         throw 'Exception';
     }
 
-    //pick(logTool);
+    pick(logTool);
     for (i = 0; i < treeHeight - 2; i++) {
-        pick(logTool);
         interact(yaw, -90, action = chop, time = breakTimes("log"));                // Chop remaining tree
     }
-    //interact(yaw, -90, action = chop, time = breakTimes("log") * (treeHeight - 2)); // Chop remaining tree
+    
     pick(sapling);                                                              // Equip sapling
     interact(yaw, 90, action = plant, time = 1);                                // Replant tree
     //Chat.log("LOG: Stop - chopTree(yaw: " + yaw + ")");
