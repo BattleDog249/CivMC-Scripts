@@ -117,7 +117,7 @@ function pick(name, hotbar = null, dmg = -1) {
 
 // Function that walks to the center of the given x, z coordinate; assumes flat y level
 // If x, z is ommitted then centers the bot on the current block
-// precise=true attempts to walk to the exact coordinate rather than the centre of the block
+// precise=true attempts to walk to the exact coordinate rather than the center of the block
 function walkTo(x = null, z = null, precise = false, timeout = null) {
     pos = Player.getPlayer().getPos();
     if (x == null) {
@@ -189,7 +189,6 @@ function breakTimes(block, buffer = 6) {
             } else if (item.getItemId().includes("diamond")) {
                 breakTime = 8;
             } else if (item.getItemId().includes("iron")) {
-                Chat.log("Detected iron axe!");
                 breakTime = 10;
             } else if (item.getItemId().includes("stone")) {
                 breakTime = 15;
