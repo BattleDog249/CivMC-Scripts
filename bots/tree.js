@@ -7,7 +7,7 @@
 */
 
 // Set to tools to be used in harvest
-logTool = "minecraft:netherite_axe";
+logTool = "minecraft:golden_axe";
 leafTool = "minecraft:stick";
 
 // Set to the maximum height of tree
@@ -35,11 +35,11 @@ direction = "lat";
 
 // Assign to exact coords of starting block, typically lodestone
 // Testing coords
-startX = -122.5;
-startZ = 5.5;
+//startX = -122.5;
+//startZ = 5.5;
 // First level of tree farm
-//startX = 3247.5;
-//startZ = -2397.5;
+startX = 3247.5;
+startZ = -2397.5;
 // Second level of tree farm
 //startX = 3247.5;
 //startZ = -2396.5;
@@ -55,11 +55,11 @@ startZ = 5.5;
 
 // Assign coords of last tree opposite of starting coords
 // Testing coords
-endX = -197.5;
-endZ = 80.5;
+//endX = -197.5;
+//endZ = 80.5;
 // First level of tree farm
-//endX = 3172.5;
-//endZ = -2332.5;
+endX = 3172.5;
+endZ = -2332.5;
 // Second level of tree farm
 //endX = 3172.5;
 //endZ = -2331.5;
@@ -250,9 +250,10 @@ function interact(yaw, pitch, action, time, wait = 5) {
 // Function for harvesting and replanting an entire tree
 // yaw: Cardinal direction of tree to be harvested
 // width: Distance between trees
-function chopTree(yaw, width) {
+function chopTree(yaw, width, wait = 5) {
     //Chat.log("LOG: Start - chopTree(yaw: " + yaw + ")");
     pick(leafTool);                                                             // Equip tool used to break leaves
+    Client.waitTick(wait);                                                      // Wait buffer
     interact(yaw, 0, action = chop, time = breakTimes("leaves") * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
     pos = Player.getPlayer().getPos();                                          // Grab current coordinates
     
@@ -260,26 +261,30 @@ function chopTree(yaw, width) {
     if (yaw == 0) {                                                             // If facing south
         walkTo(pos.x, pos.z + width);                                               // Walk to tree
         pick(logTool);                                                              // Equip logging tool
-        interact(yaw, 35, action = chop, time = breakTimes("log"));             // Chop first block of tree
-        interact(yaw, 35, action = chop, time = breakTimes("log"));             // Chop second block of tree
+        Client.waitTick(wait);                                                      // Wait buffer
+        interact(yaw, 35, action = chop, time = breakTimes("log"));                 // Chop first block of tree
+        interact(yaw, 35, action = chop, time = breakTimes("log"));                 // Chop second block of tree
         walkTo(pos.x, pos.z + 1);                                                   // Walk under tree
     } else if (yaw == 90) {                                                     // Else if facing west
         walkTo(pos.x - width, pos.z);                                               // Walk to tree
         pick(logTool);                                                              // Equip logging tool
-        interact(yaw, 35, action = chop, time = breakTimes("log"));             // Chop first block of tree
-        interact(yaw, 35, action = chop, time = breakTimes("log"));             // Chop second block of tree
+        Client.waitTick(wait);                                                      // Wait buffer
+        interact(yaw, 35, action = chop, time = breakTimes("log"));                 // Chop first block of tree
+        interact(yaw, 35, action = chop, time = breakTimes("log"));                 // Chop second block of tree
         walkTo(pos.x - 1, pos.z);                                                   // Walk under tree
     } else if (yaw == 180) {                                                    // Else if facing north
         walkTo(pos.x, pos.z - width);                                               // Walk to tree
         pick(logTool);                                                              // Equip logging tool
-        interact(yaw, 35, action = chop, time = breakTimes("log"));             // Chop first block of tree
-        interact(yaw, 35, action = chop, time = breakTimes("log"));             // Chop second block of tree
+        Client.waitTick(wait);                                                      // Wait buffer
+        interact(yaw, 35, action = chop, time = breakTimes("log"));                 // Chop first block of tree
+        interact(yaw, 35, action = chop, time = breakTimes("log"));                 // Chop second block of tree
         walkTo(pos.x, pos.z - 1);                                                   // Walk under tree
     } else if (yaw == 270) {                                                    // Else if facing east
         walkTo(pos.x + width, pos.z);                                               // Walk to tree
         pick(logTool);                                                              // Equip logging tool
-        interact(yaw, 35, action = chop, time = breakTimes("log"));             // Chop first block of tree
-        interact(yaw, 35, action = chop, time = breakTimes("log"));             // Chop second block of tree
+        Client.waitTick(wait);                                                      // Wait buffer
+        interact(yaw, 35, action = chop, time = breakTimes("log"));                 // Chop first block of tree
+        interact(yaw, 35, action = chop, time = breakTimes("log"));                 // Chop second block of tree
         walkTo(pos.x + 1, pos.z);                                                   // Walk under tree
     } else {                                                                    // Else error catcher
         Chat.log("ERROR: Invalid yaw value for farm!");
@@ -287,11 +292,13 @@ function chopTree(yaw, width) {
     }
 
     pick(logTool);
+    Client.waitTick(wait);                                                      // Wait buffer
     for (i = 0; i < treeHeight - 2; i++) {
         interact(yaw, -90, action = chop, time = breakTimes("log"));                // Chop remaining tree
     }
     
     pick(sapling);                                                              // Equip sapling
+    Client.waitTick(wait);                                                      // Wait buffer
     interact(yaw, 90, action = plant, time = 1);                                // Replant tree
     //Chat.log("LOG: Stop - chopTree(yaw: " + yaw + ")");
 }
