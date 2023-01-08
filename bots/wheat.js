@@ -15,7 +15,7 @@ tool = "minecraft:air";
 threshold = 11;
 
 // Set starting (NW) corner of the crop field
-startx = 2527;
+startx = 2502;
 startz = -1848;
 
 // Set opposite corner of the crop field
@@ -198,18 +198,12 @@ function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 5) {
     Client.waitTick(pause);
     KeyBind.keyBind('key.use', true);
     Client.waitTick(pause);
-    //KeyBind.keyBind('key.use', false);
-    //Client.waitTick(pause);
     KeyBind.keyBind('key.forward', true);
     while ((parseInt(pos.z) == tz || parseInt(pos.x) == tx) && !(parseInt(pos.z) == tz && parseInt(pos.x) == tx)) {
         Player.getPlayer().lookAt(yaw, pitch);
-        //Client.waitTick(pause);
-        //KeyBind.keyBind('key.use', true);
-        //Client.waitTick(pause);
-        //KeyBind.keyBind('key.use', false);
-        //Client.waitTick(pause);
         pos = Player.getPlayer().getPos();
     }
+    KeyBind.keyBind('key.use', false);
     KeyBind.keyBind('key.forward', false);
     Client.waitTick(pause);
 }
