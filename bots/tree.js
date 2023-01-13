@@ -7,8 +7,8 @@
 */
 
 // Set to tools to be used in harvest
-logTool = "minecraft:stone_axe";
-leafTool = "minecraft:stick";
+logTool = "minecraft:diamond_axe";
+leafTool = "minecraft:diamond_hoe";
 
 // Set to numerical level of efficiency enchant of selected tool
 efficiency = 0;
@@ -48,11 +48,11 @@ direction = "lat";
 //startX = 3247.5;
 //startZ = -2396.5;
 // Third level of tree farm
-//startX = 3247.5;
-//startZ = -2395.5;
-// Fourth level of tree farm
 startX = 3247.5;
-startZ = -2394.5;
+startZ = -2395.5;
+// Fourth level of tree farm
+//startX = 3247.5;
+//startZ = -2394.5;
 // Fifth level of tree farm
 //startX = 3247.5;
 //startZ = -2393.5;
@@ -68,15 +68,16 @@ startZ = -2394.5;
 //endX = 3172.5;
 //endZ = -2331.5;
 // Third level of tree farm
-//endX = 3172.5;
-//endZ = -2330.5;
-// Fourth level of tree farm
 endX = 3172.5;
-endZ = -2329.5;
+endZ = -2330.5;
+// Fourth level of tree farm
+//endX = 3172.5;
+//endZ = -2329.5;
 // Fifth level of tree farm
 //endX = 3172.5;
 //endZ = -2328.5;
 
+// chop = left click, plant = right click
 chop = 'key.attack';
 plant = 'key.use';
 
@@ -91,8 +92,8 @@ function pick(name, hotbar = null, dmg = -1) {
     inv = Player.openInventory();
     slots = inv.getMap();
 
-    if (hotbar == null) {
-        hotbar = inv.getSelectedHotbarSlotIndex();
+    if (hotbar == null) {                                                       // If hotbar is assigned
+        hotbar = inv.getSelectedHotbarSlotIndex();                                  // Assign hotbar variable
     }
 
     slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];
@@ -100,28 +101,29 @@ function pick(name, hotbar = null, dmg = -1) {
     dura = item.getMaxDamage() - item.getDamage();
 
     if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected
-        inv.close();                                                                // Close player inventory
-        return true;
+        inv.close();                                                                // Close inventory
+        return true;                                                                // pick() success
     }
 
-    for (slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
-        let item = inv.getSlot(slot);
-        if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {
+    for (slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {   // For all slots in inventory
+        let item = inv.getSlot(slot);                                               // Acquire item in slot
+        if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is target and item isn't sufficiently damaged
             //Chat.log(`Found ${item.getItemId()} at slot ${slot}.`);
-            inv.swap(slot, slots["hotbar"][hotbar]);
-            Time.sleep(250);
-            inv.setSelectedHotbarSlotIndex(parseInt(slot));
-            inv.close();
-            return true;
+            inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
+            Time.sleep(250);                                                            // Wait
+            inv.setSelectedHotbarSlotIndex(parseInt(slot));                             // Select hotbar slot
+            inv.close();                                                                // Close inventory
+            return true;                                                                // pick() success
         }
     }
-    inv.close();
-    return false;
+    inv.close();                                                                // Close inventory
+    return false;                                                               // pick() fail
 }
 
 // Function that walks to the center of the given x, z coordinate; assumes flat y level
 // If x, z is ommitted then centers the bot on the current block
-// precise=true attempts to walk to the exact coordinate rather than the center of the block
+// precise: true attempts to walk to the exact coordinate rather than the center of the block
+// timeout: Set maximum amount of time walkTo() should spend walking
 function walkTo(x = null, z = null, precise = false, timeout = null) {
     pos = Player.getPlayer().getPos();
     if (x == null) {
@@ -176,7 +178,7 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
 
 // Function used to calculate break times for logs and leaves with currently selected item
 // block: Assign either log or leaves
-// buffer: Assign tick buffer to compensate for networking issues, 7 is perfect
+// buffer: Assign tick buffer to compensate for network & TPS variance, 7 is flawless in testing
 function breakTimes(block, buffer = 7) {
     
     inv = Player.openInventory();
@@ -200,6 +202,7 @@ function breakTimes(block, buffer = 7) {
                 breakTime = 30;
             } else {
                 Chat.log("ERROR: Invalid tool detected!");
+                return false;
             }
         } else {
             breakTime = 60;
@@ -220,6 +223,7 @@ function breakTimes(block, buffer = 7) {
                 breakTime = 3;
             } else {
                 Chat.log("ERROR: Invalid tool detected!");
+                return false;
             }
         } else if (item.getItemId().includes("shears")) {
             breakTime = 1;
@@ -230,6 +234,7 @@ function breakTimes(block, buffer = 7) {
         }
     } else {
         Chat.log("ERROR: Unsupported block type selected!");
+        return false;
     }
     breakTime += buffer;
     return breakTime;
@@ -239,31 +244,31 @@ function breakTimes(block, buffer = 7) {
 // yaw: Cardinal direction for bot to face
 // pitch: Vertical direction for bot to face
 // action: Key stroke, usually either key.attack (left-click) or key.use (right-click)
-// time: Time in ticks for bot to mine
-// wait: Time in ticks for buffer, useful with anticheat issues
-function interact(yaw, pitch, action, time, wait = 5) {
+// time: Time in ticks for bot to perform action
+// wait: Time in ticks for buffer between lookAt() and performing action
+function interact(yaw, pitch, action, time, wait = 3) {
     //Chat.log("LOG: Start - interact()");
     Player.getPlayer().lookAt(yaw, pitch);  // Look in set direction
     Client.waitTick(wait);                  // Wait buffer to successfully break next block
-    KeyBind.keyBind(action, true);          // Start mining
-    Client.waitTick(time);                  // Wait until block(s) break
-    KeyBind.keyBind(action, false);         // Stop mining
+    KeyBind.keyBind(action, true);          // Start action
+    Client.waitTick(time);                  // Wait time while action performs
+    KeyBind.keyBind(action, false);         // Stop action
     //Chat.log("LOG: Stop - interact()");
+    return true;
 }
 
 // Function for harvesting and replanting an entire tree
 // yaw: Cardinal direction of tree to be harvested
 // width: Distance between trees
 // wait: Wait buffer
-function chopTree(yaw, width, wait = 5) {
+function chopTree(yaw, width, wait = 3) {
     //Chat.log("LOG: Start - chopTree(yaw: " + yaw + ")");
     pick(leafTool);                                                             // Equip tool used to break leaves
     Client.waitTick(wait);                                                      // Wait buffer
-    interact(yaw, 0, action = chop, time = breakTimes("leaves") * width);       // Break leaves in front of next tree, and waits just long enough to collect falling logs too
+    interact(yaw, 0, action = chop, time = breakTimes("leaves", 2) * width);    // Break leaves in front of next tree, usually long enough to collect falling logs
     pos = Player.getPlayer().getPos();                                          // Grab current coordinates
     
-    // Walk to next tree in row
-    // TESTING: Adding 5 to yaw avoid breaking panes if tree isn't grown
+    // Check all potential orientations
     if (yaw == 0) {                                                             // If facing south
         walkTo(pos.x, pos.z + width);                                               // Walk to tree
         pick(logTool);                                                              // Equip logging tool
@@ -294,21 +299,22 @@ function chopTree(yaw, width, wait = 5) {
         walkTo(pos.x + 1, pos.z);                                                   // Walk under tree
     } else {                                                                    // Else error catcher
         Chat.log("ERROR: Invalid yaw value for farm!");
-        throw 'Exception';
+        return false;                                                               // chopTree() fail
     }
 
-    pick(logTool);
+    pick(logTool);                                                              // Pick set logging tool
     Client.waitTick(wait);                                                      // Wait buffer
-    for (i = 0; i < treeHeight - 2; i++) {
-        interact(yaw, -90, action = chop, time = breakTimes("log"));                // Chop remaining tree
+    for (i = 0; i < treeHeight - 2; i++) {                                      // For remaining height of tree
+        interact(yaw, -90, action = chop, time = breakTimes("log"));                // Chop block in tree
     }
     
     pick(sapling);                                                              // Equip sapling
     Client.waitTick(wait);                                                      // Wait buffer
     interact(yaw, 90, action = chop, time = 1);                                 // Break existing sapling, if present
-    Client.waitTick(wait);
+    Client.waitTick(wait);                                                      // Wait buffer
     interact(yaw, 90, action = plant, time = 1);                                // Replant tree
     //Chat.log("LOG: Stop - chopTree(yaw: " + yaw + ")");
+    return true;                                                                // chopTree() success
 }
 
 Chat.log("Starting tree bot!");
