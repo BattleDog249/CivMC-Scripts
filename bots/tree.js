@@ -10,6 +10,10 @@
 logTool = "minecraft:stone_axe";
 leafTool = "minecraft:stick";
 
+// Set to numerical level of efficiency enchant of selected tool
+efficiency = 0;
+haste = 0;
+
 // Set to the maximum height of tree
 // Oak: 6, Birch: 7
 // Mehri Jungle: 6
@@ -41,14 +45,14 @@ direction = "lat";
 //startX = 3247.5;
 //startZ = -2397.5;
 // Second level of tree farm
-startX = 3247.5;
-startZ = -2396.5;
+//startX = 3247.5;
+//startZ = -2396.5;
 // Third level of tree farm
 //startX = 3247.5;
 //startZ = -2395.5;
 // Fourth level of tree farm
-//startX = 3247.5;
-//startZ = -2394.5;
+startX = 3247.5;
+startZ = -2394.5;
 // Fifth level of tree farm
 //startX = 3247.5;
 //startZ = -2393.5;
@@ -61,14 +65,14 @@ startZ = -2396.5;
 //endX = 3172.5;
 //endZ = -2332.5;
 // Second level of tree farm
-endX = 3172.5;
-endZ = -2331.5;
+//endX = 3172.5;
+//endZ = -2331.5;
 // Third level of tree farm
 //endX = 3172.5;
 //endZ = -2330.5;
 // Fourth level of tree farm
-//endX = 3172.5;
-//endZ = -2329.5;
+endX = 3172.5;
+endZ = -2329.5;
 // Fifth level of tree farm
 //endX = 3172.5;
 //endZ = -2328.5;
@@ -172,7 +176,7 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
 
 // Function used to calculate break times for logs and leaves with currently selected item
 // block: Assign either log or leaves
-// buffer: Assign tick buffer to compensate for networking issues, 6 is pretty good, 7 probably better
+// buffer: Assign tick buffer to compensate for networking issues, 7 is perfect
 function breakTimes(block, buffer = 7) {
     
     inv = Player.openInventory();
@@ -187,7 +191,7 @@ function breakTimes(block, buffer = 7) {
             } else if (item.getItemId().includes("netherite")) {
                 breakTime = 7;
             } else if (item.getItemId().includes("diamond")) {
-                breakTime = 8;
+                breakTime = 3;          // EF4: 3, default: 8
             } else if (item.getItemId().includes("iron")) {
                 breakTime = 10;
             } else if (item.getItemId().includes("stone")) {
