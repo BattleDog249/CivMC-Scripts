@@ -176,68 +176,129 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
     return true;
 }
 
+// Function to calculate time in ticks to mine a certain block with selected tool multiplier
+// nothing = 1; wood = 2; stone = 4; iron = 6; diamond = 8; netherite = 9; gold = 12;
+function breakTicks(toolMultiplier) {
+    speedMultiplier = toolMultiplier;
+    if ((efficiency >= 1 && efficiency <= 5) && (speedMultiplier != 1 || speedMultiplier != 15 || speedMultiplier != 1.5)) {
+        speedMultiplier += efficiency ^ 2 + 1;
+    }
+    if (haste == 1 || haste == 2) {
+        speedMultiplier *= 0.2 * haste + 1;
+    }
+    damage = speedMultiplier / hardness;
+    damage /= 30;
+    if (damage > 1) {                                   // If instant break
+        return 1;                                           // Return 1 tick
+    }
+    ticks = Math.ceil(1 / damage);                      // Round up
+    seconds = ticks / 20;
+    return ticks;
+}
+
 // Function used to calculate break times for logs and leaves with currently selected item
 // block: Assign either log or leaves
 // buffer: Assign tick buffer to compensate for network & TPS variance, 7 is flawless in testing
 function breakTimes(block, buffer = 7) {
     
+    nothing = 1;
+    wood = 2;
+    stone = 4;
+    iron = 6;
+    diamond = 8;
+    netherite = 9;
+    gold = 12;
+
+    shears = 15;
+    sword = 1.5;
+
     inv = Player.openInventory();
-    slots = inv.getMap();
-    slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];
     item = inv.getSlot(slot);
 
     if (block == "log") {
+        hardness = 2;
         if (item.getItemId().includes("_axe")) {
             if (item.getItemId().includes("gold")) {
-                breakTime = 5;
+                breakTime = breakTicks(gold);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("netherite")) {
-                breakTime = 7;
+                breakTime = breakTicks(netherite);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("diamond")) {
-                breakTime = 3;          // EF4: 3, default: 8
+                breakTime = breakTicks(diamond);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("iron")) {
-                breakTime = 10;
+                breakTime = breakTicks(iron);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("stone")) {
-                breakTime = 15;
+                breakTime = breakTicks(stone);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("wood")) {
-                breakTime = 30;
+                breakTime = breakTicks(wood);
+                breakTime += buffer;
+                return breakTime;
             } else {
                 Chat.log("ERROR: Invalid tool detected!");
                 return false;
             }
         } else {
-            breakTime = 60;
+            breakTime = breakTicks(nothing);
+            breakTime += buffer;
+            return breakTime;
         }
     } else if (block == "leaves") {
+        hardness = 0.2;
         if (item.getItemId().includes("_hoe")) {
             if (item.getItemId().includes("gold")) {
-                breakTime = 1;
+                breakTime = breakTicks(gold);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("netherite")) {
-                breakTime = 1;
+                breakTime = breakTicks(netherite);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("diamond")) {
-                breakTime = 1;
+                breakTime = breakTicks(diamond);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("iron")) {
-                breakTime = 1;
+                breakTime = breakTicks(iron);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("stone")) {
-                breakTime = 2;
+                breakTime = breakTicks(stone);
+                breakTime += buffer;
+                return breakTime;
             } else if (item.getItemId().includes("wood")) {
-                breakTime = 3;
+                breakTime = breakTicks(wood);
+                breakTime += buffer;
+                return breakTime;
             } else {
                 Chat.log("ERROR: Invalid tool detected!");
                 return false;
             }
         } else if (item.getItemId().includes("shears")) {
-            breakTime = 1;
+            breakTime = breakTicks(shears);
+            breakTime += buffer;
+            return breakTime;
         } else if (item.getItemId().includes("_sword")) {
-            breakTime = 4;
+            breakTime = breakTicks(sword);
+            breakTime += buffer;
+            return breakTime;
         } else {
-            breakTime = 6;
+            breakTime = breakTicks(nothing);
+            breakTime += buffer;
+            return breakTime;
         }
     } else {
         Chat.log("ERROR: Unsupported block type selected!");
         return false;
     }
-    breakTime += buffer;
-    return breakTime;
 }
 
 // Function to interact with blocks in a set direction for a set amount of time
