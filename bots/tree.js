@@ -178,7 +178,9 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
 
 // Function to calculate time in ticks to mine a certain block with selected tool multiplier
 // nothing = 1; wood = 2; stone = 4; iron = 6; diamond = 8; netherite = 9; gold = 12;
-function breakTicks(toolMultiplier) {
+// Efficiency 0 - 5
+// Haste 0 - 2
+function breakTicks(toolMultiplier, efficiency = 0, haste = 0) {
     speedMultiplier = toolMultiplier;
     if ((efficiency >= 1 && efficiency <= 5) && (speedMultiplier != 1 || speedMultiplier != 15 || speedMultiplier != 1.5)) {
         speedMultiplier += efficiency ^ 2 + 1;
@@ -200,17 +202,6 @@ function breakTicks(toolMultiplier) {
 // block: Assign either log or leaves
 // buffer: Assign tick buffer to compensate for network & TPS variance, 7 is flawless in testing
 function breakTimes(block, buffer = 7) {
-    
-    nothing = 1;
-    wood = 2;
-    stone = 4;
-    iron = 6;
-    diamond = 8;
-    netherite = 9;
-    gold = 12;
-
-    shears = 15;
-    sword = 1.5;
 
     inv = Player.openInventory();
     slots = inv.getMap();
@@ -221,27 +212,27 @@ function breakTimes(block, buffer = 7) {
         hardness = 2;
         if (item.getItemId().includes("_axe")) {
             if (item.getItemId().includes("gold")) {
-                breakTime = breakTicks(gold);
+                breakTime = breakTicks(12, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("netherite")) {
-                breakTime = breakTicks(netherite);
+                breakTime = breakTicks(9, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("diamond")) {
-                breakTime = breakTicks(diamond);
+                breakTime = breakTicks(8, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("iron")) {
-                breakTime = breakTicks(iron);
+                breakTime = breakTicks(6, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("stone")) {
-                breakTime = breakTicks(stone);
+                breakTime = breakTicks(4, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("wood")) {
-                breakTime = breakTicks(wood);
+                breakTime = breakTicks(2, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else {
@@ -249,7 +240,7 @@ function breakTimes(block, buffer = 7) {
                 return false;
             }
         } else {
-            breakTime = breakTicks(nothing);
+            breakTime = breakTicks(1, efficiency = 0, haste);
             breakTime += buffer;
             return breakTime;
         }
@@ -257,27 +248,27 @@ function breakTimes(block, buffer = 7) {
         hardness = 0.2;
         if (item.getItemId().includes("_hoe")) {
             if (item.getItemId().includes("gold")) {
-                breakTime = breakTicks(gold);
+                breakTime = breakTicks(12, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("netherite")) {
-                breakTime = breakTicks(netherite);
+                breakTime = breakTicks(9, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("diamond")) {
-                breakTime = breakTicks(diamond);
+                breakTime = breakTicks(8, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("iron")) {
-                breakTime = breakTicks(iron);
+                breakTime = breakTicks(6, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("stone")) {
-                breakTime = breakTicks(stone);
+                breakTime = breakTicks(4, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else if (item.getItemId().includes("wood")) {
-                breakTime = breakTicks(wood);
+                breakTime = breakTicks(2, efficiency, haste);
                 breakTime += buffer;
                 return breakTime;
             } else {
@@ -285,15 +276,15 @@ function breakTimes(block, buffer = 7) {
                 return false;
             }
         } else if (item.getItemId().includes("shears")) {
-            breakTime = breakTicks(shears);
+            breakTime = breakTicks(15, efficiency = 0, haste);
             breakTime += buffer;
             return breakTime;
         } else if (item.getItemId().includes("_sword")) {
-            breakTime = breakTicks(sword);
+            breakTime = breakTicks(1.5, efficiency = 0, haste);
             breakTime += buffer;
             return breakTime;
         } else {
-            breakTime = breakTicks(nothing);
+            breakTime = breakTicks(1, efficiency = 0, haste);
             breakTime += buffer;
             return breakTime;
         }
