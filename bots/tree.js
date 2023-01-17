@@ -176,32 +176,72 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
     return true;
 }
 
-// Function to calculate time in ticks to mine a certain block with selected tool multiplier
-// nothing = 1; wood = 2; stone = 4; iron = 6; diamond = 8; netherite = 9; gold = 12;
-// Efficiency 0 - 5
-// Haste 0 - 2
-function breakTicks(toolMultiplier, efficiency = 0, haste = 0) {
-    speedMultiplier = toolMultiplier;
-    if ((efficiency >= 1 && efficiency <= 5) && (speedMultiplier != 1 || speedMultiplier != 15 || speedMultiplier != 1.5)) {
-        speedMultiplier += efficiency ^ 2 + 1;
+//  Function that returns time in ticks to mine a certain block with selected tool multiplier, plus a buffer
+//  Does not account for mining fatigue, being in water w/o AA, and not on ground
+//  Assumes tool assigned is best for the job and that it can harvest expected block
+//      tool: Assign tool speed multiplier
+//          nothing = 1; wood = 2; stone = 4; iron = 6; diamond = 8; netherite = 9; gold = 12;
+//          Shears = 2 (1 on vine and glow lichen, 5 on wool, 15 on cobwebs and leaves)
+//          Sword = 1.5 (15 on cobwebs); 
+//      hardness: Assign hardness value of block to be broken
+//          log = 2; leaves = 0.2; crop = 0;
+//      efficiency: Assign efficiency level of tool 0 - 5
+//      haste: Assign haste level 0 - 2
+//      buffer: Assign tick buffer to compensate for network & TPS variance, 7 is flawless in testing
+function breakTicks(tool, hardness, efficiency = 0, haste = 0, buffer = 7) {
+    speed = tool;
+    if ((efficiency >= 1 && efficiency <= 5) && (speed != 1 && speed != 1.5 && speed != 5 && speed != 15)) {
+        speed += efficiency ^ 2 + 1;
     }
-    if (haste == 1 || haste == 2) {
-        speedMultiplier *= 0.2 * haste + 1;
+    if (haste == 0) {
+        damage = speed / hardness;
+        damage /= 30;
+        if (damage > 1) {
+            ticks = 1;
+            //Chat.log("LOG: Ticks = " + ticks);
+            ticks += buffer;
+            //Chat.log("LOG: Returning Ticks + Buffer = " + ticks);
+            //seconds = ticks / 20;
+            //Chat.log("LOG: Seconds (with buffer): " + seconds);
+            return ticks;
+        }
+        ticks = Math.ceil(1 / damage);  // Round up
+        //Chat.log("LOG: Ticks = " + ticks);
+        ticks += buffer;
+        //Chat.log("LOG: Returning Ticks + Buffer = " + ticks);
+        //seconds = ticks / 20;
+        //Chat.log("LOG: Seconds (with buffer): " + seconds);
+        return ticks;
+    } else if (haste == 1 || haste == 2) {
+        speed *= 0.2 * haste + 1;
+        
+        damage = speed / hardness;
+        damage /= 30;
+        if (damage > 1) {
+            ticks = 1;
+            //Chat.log("LOG: Ticks = " + ticks);
+            ticks += buffer;
+            //Chat.log("LOG: Returning Ticks + Buffer = " + ticks);
+            //seconds = ticks / 20;
+            //Chat.log("LOG: Seconds (with buffer): " + seconds);
+            return ticks;
+        }
+        ticks = Math.ceil(1 / damage);  // Round up
+        //Chat.log("LOG: Ticks = " + ticks);
+        ticks += buffer;
+        //Chat.log("LOG: Returning Ticks + Buffer = " + ticks);
+        //seconds = ticks / 20;
+        //Chat.log("LOG: Seconds (with buffer): " + seconds);
+        return ticks;
+    } else {
+        Chat.log("ERROR: Invalid haste value assigned!");
+        return false;
     }
-    damage = speedMultiplier / hardness;
-    damage /= 30;
-    if (damage > 1) {                                   // If instant break
-        return 1;                                           // Return 1 tick
-    }
-    ticks = Math.ceil(1 / damage);                      // Round up
-    seconds = ticks / 20;
-    return ticks;
 }
 
-// Function used to calculate break times for logs and leaves with currently selected item
+// Function used in conjunction with breakTicks(), to correctly assign tool values based on equipped tool
 // block: Assign either log or leaves
-// buffer: Assign tick buffer to compensate for network & TPS variance, 7 is flawless in testing
-function breakTimes(block, buffer = 7) {
+function breakTimes(block) {
 
     inv = Player.openInventory();
     slots = inv.getMap();
@@ -209,83 +249,65 @@ function breakTimes(block, buffer = 7) {
     item = inv.getSlot(slot);
 
     if (block == "log") {
-        hardness = 2;
         if (item.getItemId().includes("_axe")) {
             if (item.getItemId().includes("gold")) {
-                breakTime = breakTicks(12, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 12, hardness = 2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("netherite")) {
-                breakTime = breakTicks(9, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 9, hardness = 2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("diamond")) {
-                breakTime = breakTicks(8, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 8, hardness = 2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("iron")) {
-                breakTime = breakTicks(6, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 6, hardness = 2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("stone")) {
-                breakTime = breakTicks(4, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 4, hardness = 2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("wood")) {
-                breakTime = breakTicks(2, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 2, hardness = 2, efficiency, haste);
                 return breakTime;
             } else {
                 Chat.log("ERROR: Invalid tool detected!");
                 return false;
             }
         } else {
-            breakTime = breakTicks(1, efficiency = 0, haste);
-            breakTime += buffer;
+            breakTime = breakTicks(tool = 1, hardness = 2, efficiency = 0, haste);
             return breakTime;
         }
     } else if (block == "leaves") {
-        hardness = 0.2;
         if (item.getItemId().includes("_hoe")) {
             if (item.getItemId().includes("gold")) {
-                breakTime = breakTicks(12, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 12, hardness = 0.2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("netherite")) {
-                breakTime = breakTicks(9, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 9, hardness = 0.2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("diamond")) {
-                breakTime = breakTicks(8, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 8, hardness = 0.2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("iron")) {
-                breakTime = breakTicks(6, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 6, hardness = 0.2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("stone")) {
-                breakTime = breakTicks(4, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 4, hardness = 0.2, efficiency, haste);
                 return breakTime;
             } else if (item.getItemId().includes("wood")) {
-                breakTime = breakTicks(2, efficiency, haste);
-                breakTime += buffer;
+                breakTime = breakTicks(tool = 2, hardness = 0.2, efficiency, haste);
                 return breakTime;
             } else {
                 Chat.log("ERROR: Invalid tool detected!");
                 return false;
             }
         } else if (item.getItemId().includes("shears")) {
-            breakTime = breakTicks(15, efficiency = 0, haste);
-            breakTime += buffer;
+            breakTime = breakTicks(tool = 15, hardness = 0.2, efficiency = 0, haste);
             return breakTime;
         } else if (item.getItemId().includes("_sword")) {
-            breakTime = breakTicks(1.5, efficiency = 0, haste);
-            breakTime += buffer;
+            breakTime = breakTicks(tool = 1.5, hardness = 0.2, efficiency = 0, haste);
             return breakTime;
         } else {
-            breakTime = breakTicks(1, efficiency = 0, haste);
-            breakTime += buffer;
+            breakTime = breakTicks(tool = 1, hardness = 0.2, efficiency = 0, haste);
             return breakTime;
         }
     } else {
