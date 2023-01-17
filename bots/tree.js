@@ -84,29 +84,30 @@ plant = 'key.use';
 // Grab current coordinates
 pos = Player.getPlayer().getPos();
 
-// Function to equip a given item on the hotbar if located in inventory
-// name: "minecraft:itemname"
-// hotbar: Preferred hotbar slot (may not be used)
-// dmg: Minimum damage value, intended for use with tools to prevent breakages
+//  Function to equip a given item on the hotbar if located in inventory
+//      name: "minecraft:item_name"
+//      hotbar: Hotbar slot to swap item to, 0 - 9
+//      dmg: Minimum damage value, intended for use with tools to prevent breakages
 function pick(name, hotbar = null, dmg = -1) {
     inv = Player.openInventory();
     slots = inv.getMap();
 
     if (hotbar == null) {                                                       // If hotbar is assigned
-        hotbar = inv.getSelectedHotbarSlotIndex();                                  // Assign hotbar variable
+        hotbar = inv.getSelectedHotbarSlotIndex();                                  // Swap item to assigned slot
     }
 
     slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];
     item = inv.getSlot(slot);
     dura = item.getMaxDamage() - item.getDamage();
 
-    if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected
+    if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected and isn't sufficiently damaged
         inv.close();                                                                // Close inventory
         return true;                                                                // pick() success
     }
 
     for (slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {   // For all slots in inventory
-        let item = inv.getSlot(slot);                                               // Acquire item in slot
+        item = inv.getSlot(slot);                                                   // Acquire item in slot
+        dura = item.getMaxDamage() - item.getDamage();                              // Determine item durability
         if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is target and item isn't sufficiently damaged
             //Chat.log(`Found ${item.getItemId()} at slot ${slot}.`);
             inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
@@ -239,10 +240,9 @@ function breakTicks(tool, hardness, efficiency = 0, haste = 0, buffer = 7) {
     }
 }
 
-// Function used in conjunction with breakTicks(), to correctly assign tool values based on equipped tool
-// block: Assign either log or leaves
+//  Function used in conjunction with breakTicks() to correctly assign tool values based on equipped tool
+//      block: Assign either log or leaves
 function breakTimes(block) {
-
     inv = Player.openInventory();
     slots = inv.getMap();
     slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];
@@ -316,19 +316,19 @@ function breakTimes(block) {
     }
 }
 
-// Function to interact with blocks in a set direction for a set amount of time
-// yaw: Cardinal direction for bot to face
-// pitch: Vertical direction for bot to face
-// action: Key stroke, usually either key.attack (left-click) or key.use (right-click)
-// time: Time in ticks for bot to perform action
-// wait: Time in ticks for buffer between lookAt() and performing action
+//  Function to interact with blocks in a set direction for a set amount of time
+//      yaw: Cardinal direction for bot to face
+//      pitch: Vertical direction for bot to face
+//      action: Key stroke, usually either key.attack (left-click) or key.use (right-click)
+//      time: Time in ticks for bot to perform action
+//      wait: Time in ticks for buffer between lookAt() and performing action
 function interact(yaw, pitch, action, time, wait = 3) {
     //Chat.log("LOG: Start - interact()");
-    Player.getPlayer().lookAt(yaw, pitch);  // Look in set direction
-    Client.waitTick(wait);                  // Wait buffer to successfully break next block
-    KeyBind.keyBind(action, true);          // Start action
-    Client.waitTick(time);                  // Wait time while action performs
-    KeyBind.keyBind(action, false);         // Stop action
+    Player.getPlayer().lookAt(yaw, pitch);  //  Look in set direction
+    Client.waitTick(wait);                  //  Wait buffer to successfully break next block
+    KeyBind.keyBind(action, true);          //  Start action
+    Client.waitTick(time);                  //  Wait time while action performs
+    KeyBind.keyBind(action, false);         //  Stop action
     //Chat.log("LOG: Stop - interact()");
     return true;
 }
