@@ -89,16 +89,16 @@ pos = Player.getPlayer().getPos();
 //      hotbar: Hotbar slot to swap item to, 0 - 9
 //      dmg: Minimum damage value, intended for use with tools to prevent breakages
 function pick(name, hotbar = null, dmg = -1) {
-    inv = Player.openInventory();
-    slots = inv.getMap();
+    inv = Player.openInventory();                                               // Open player inventory
+    slots = inv.getMap();                                                       // Acquire inventory map
 
     if (hotbar == null) {                                                       // If hotbar is assigned
-        hotbar = inv.getSelectedHotbarSlotIndex();                                  // Swap item to assigned slot
+        hotbar = inv.getSelectedHotbarSlotIndex();                                  // Swap item to currently selected slot
     }
 
-    slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];
-    item = inv.getSlot(slot);
-    dura = item.getMaxDamage() - item.getDamage();
+    slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];                   // Swap item to assigned hotbar slot
+    item = inv.getSlot(slot);                                                   // Acquire item in slot
+    dura = item.getMaxDamage() - item.getDamage();                              // Determine item durability
 
     if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected and isn't sufficiently damaged
         inv.close();                                                                // Close inventory
