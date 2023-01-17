@@ -193,7 +193,7 @@ function farmLine(tx, tz, yaw, pitch = 90, item = null, pause = 5) {
     Player.getPlayer().lookAt(yaw, pitch);
 
     if (item != null) {
-        pick(item);
+        pick(name = item, hotbar = null, dmg = -1);
     }
 
     Client.waitTick(pause);
@@ -276,7 +276,7 @@ for (let rx = parseInt(pos.x); rx + 1; rx++) {
 
     walkTo(rx, startz);
     if (!!tool) {
-        pick(tool);
+        pick(name = tool, hotbar = null, dmg = -1);
     }
     Time.sleep(250);
     farmLine(rx, endz, hyaw, pitch = 30, pause = 1);
