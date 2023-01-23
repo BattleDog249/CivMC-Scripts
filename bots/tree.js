@@ -15,9 +15,9 @@ efficiency = 4;
 haste = 0;
 
 // Set to the maximum height of tree
-// Oak: 6, Birch: 7
+// Oak: 6, Birch (No Height Limiter): 7
 // Mehri Jungle: 6
-treeHeight = 7;
+treeHeight = 6;
 
 // Set to (in blocks) distance between trees in a row
 // Mehri Farms: 4
@@ -42,14 +42,14 @@ direction = "lat";
 //startX = -94.5;
 //startZ = 14.5;
 // First level of tree farm
-startX = 3247.5;
-startZ = -2397.5;
+//startX = 3247.5;
+//startZ = -2397.5;
 // Second level of tree farm
-//startX = 3217.5;    //editted
+//startX = 3247.5;
 //startZ = -2396.5;
 // Third level of tree farm
-//startX = 3247.5;
-//startZ = -2395.5;
+startX = 3247.5;
+startZ = -2395.5;
 // Fourth level of tree farm
 //startX = 3247.5;
 //startZ = -2394.5;
@@ -62,14 +62,14 @@ startZ = -2397.5;
 //endX = -104.5;
 //endZ = 4.5;
 // First level of tree farm
-endX = 3172.5;
-endZ = -2332.5;
+//endX = 3172.5;
+//endZ = -2332.5;
 // Second level of tree farm
 //endX = 3172.5;
 //endZ = -2331.5;
 // Third level of tree farm
-//endX = 3172.5;
-//endZ = -2330.5;
+endX = 3172.5;
+endZ = -2330.5;
 // Fourth level of tree farm
 //endX = 3172.5;
 //endZ = -2329.5;
