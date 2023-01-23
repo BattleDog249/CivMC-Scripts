@@ -15,7 +15,7 @@ tool = "minecraft:air";
 threshold = 11;
 
 // Set starting (NW) corner of the crop field
-startx = 2502;
+startx = 2528;
 startz = -1848;
 
 // Set opposite corner of the crop field
