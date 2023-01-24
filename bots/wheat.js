@@ -69,7 +69,7 @@ function pick(name, hotbar = null, dmg = -1) {
     if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected and isn't sufficiently damaged
         //Chat.log(`Found ${item.getItemId()} in hand at slot ${slot}.`);
         inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
-        Time.sleep(250);                                                            // Wait
+        Client.waitTick(5);                                                         // Wait buffer
         inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
         inv.close();                                                                // Close inventory
         return true;                                                                // pick() success
@@ -81,7 +81,7 @@ function pick(name, hotbar = null, dmg = -1) {
         if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is target and item isn't sufficiently damaged
             //Chat.log(`Found ${item.getItemId()} in hand at slot ${slot}.`);
             inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
-            Time.sleep(250);                                                            // Wait
+            Client.waitTick(5);                                                         // Wait buffer
             inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
             inv.close();                                                                // Close inventory
             return true;                                                                // pick() success
