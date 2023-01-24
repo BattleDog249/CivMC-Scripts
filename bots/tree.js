@@ -160,15 +160,15 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
         Player.getPlayer().lookAt(tx, pos.y, tz);
         pos = Player.getPlayer().getPos();
         if (Math.abs(pos.x - tx) < 0.5 && Math.abs(pos.z - tz) < 0.5) {
-            KeyBind.keyBind('key.sneak', false);
+            KeyBind.keyBind('key.sneak', true);
         }
         if (Math.abs(pos.x - tx) < 0.075 && Math.abs(pos.z - tz) < 0.075) {
             break;
         }
         Client.waitTick();
         timer += 1;
-        if (timeout && timer > timeout) {
-            Chat.log("walkTo timed out");
+        if (timeout != null && timer > timeout) {
+            Chat.log("LOG: walkTo() timed out");
             KeyBind.keyBind('key.forward', false);
             KeyBind.keyBind('key.sneak', false);
             return false;
