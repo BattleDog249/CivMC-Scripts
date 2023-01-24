@@ -11,7 +11,7 @@ logTool = "minecraft:diamond_axe";
 leafTool = "minecraft:shears";
 
 // Set to numerical level of efficiency enchant of selected tool
-efficiency = 4;
+efficiency = 0;
 haste = 0;
 
 // Set to the maximum height of tree
@@ -42,8 +42,8 @@ direction = "lat";
 //startX = -94.5;
 //startZ = 14.5;
 // First level of tree farm
-//startX = 3247.5;
-//startZ = -2397.5;
+startX = 3247.5;
+startZ = -2397.5;
 // Second level of tree farm
 //startX = 3247.5;
 //startZ = -2396.5;
@@ -51,8 +51,8 @@ direction = "lat";
 //startX = 3247.5;
 //startZ = -2395.5;
 // Fourth level of tree farm
-startX = 3187.5;    //edittd
-startZ = -2394.5;
+//startX = 3247.5;
+//startZ = -2394.5;
 // Fifth level of tree farm
 //startX = 3247.5;
 //startZ = -2393.5;
@@ -62,8 +62,8 @@ startZ = -2394.5;
 //endX = -104.5;
 //endZ = 4.5;
 // First level of tree farm
-//endX = 3172.5;
-//endZ = -2332.5;
+endX = 3172.5;
+endZ = -2332.5;
 // Second level of tree farm
 //endX = 3172.5;
 //endZ = -2331.5;
@@ -71,8 +71,8 @@ startZ = -2394.5;
 //endX = 3172.5;
 //endZ = -2330.5;
 // Fourth level of tree farm
-endX = 3172.5;
-endZ = -2329.5;
+//endX = 3172.5;
+//endZ = -2329.5;
 // Fifth level of tree farm
 //endX = 3172.5;
 //endZ = -2328.5;
