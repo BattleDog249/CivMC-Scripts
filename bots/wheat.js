@@ -53,6 +53,7 @@ if (startz < endz) {
 //      name: "minecraft:item_name"
 //      hotbar: Hotbar slot to swap item to, 0 - 9
 //      dmg: Minimum damage value, intended for use with tools to prevent breakages
+//  Known issue: If item to pick is already in desired slot, it will be swapped
 function pick(name, hotbar = null, dmg = -1) {
     inv = Player.openInventory();                                               // Open player inventory
     slots = inv.getMap();                                                       // Acquire inventory map
@@ -62,10 +63,14 @@ function pick(name, hotbar = null, dmg = -1) {
     }
 
     slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];                   // Swap item to assigned hotbar slot
+    
     item = inv.getSlot(slot);                                                   // Acquire item in slot
     dura = item.getMaxDamage() - item.getDamage();                              // Determine item durability
-
     if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected and isn't sufficiently damaged
+        //Chat.log(`Found ${item.getItemId()} in hand at slot ${slot}.`);
+        inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
+        Time.sleep(250);                                                            // Wait
+        inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
         inv.close();                                                                // Close inventory
         return true;                                                                // pick() success
     }
@@ -74,10 +79,10 @@ function pick(name, hotbar = null, dmg = -1) {
         item = inv.getSlot(slot);                                                   // Acquire item in slot
         dura = item.getMaxDamage() - item.getDamage();                              // Determine item durability
         if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is target and item isn't sufficiently damaged
-            //Chat.log(`Found ${item.getItemId()} at slot ${slot}.`);
+            //Chat.log(`Found ${item.getItemId()} in hand at slot ${slot}.`);
             inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
             Time.sleep(250);                                                            // Wait
-            inv.setSelectedHotbarSlotIndex(parseInt(slot));                             // Select hotbar slot
+            inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
             inv.close();                                                                // Close inventory
             return true;                                                                // pick() success
         }
@@ -88,7 +93,8 @@ function pick(name, hotbar = null, dmg = -1) {
 
 // Function that walks to the center of the given x, z coordinate; assumes flat y level
 // If x, z is ommitted then centers the bot on the current block
-// precise=true attempts to walk to the exact coordinate rather than the centre of the block
+// precise: true attempts to walk to the exact coordinate rather than the center of the block
+// timeout: Set maximum amount of time walkTo() should spend walking
 function walkTo(x = null, z = null, precise = false, timeout = null) {
     pos = Player.getPlayer().getPos();
     if (x == null) {
@@ -112,22 +118,22 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
             tz = parseInt(z) + 0.5;
         }
     }
-    Chat.log("walking to x: " + tx + ", z: " + tz);
+    //Chat.log("walking to x: " + tx + ", z: " + tz);
     KeyBind.keyBind('key.forward', true);
     timer = 0;
     while (true) {
         Player.getPlayer().lookAt(tx, pos.y, tz);
         pos = Player.getPlayer().getPos();
         if (Math.abs(pos.x - tx) < 0.5 && Math.abs(pos.z - tz) < 0.5) {
-            KeyBind.keyBind('key.sneak', false);
+            KeyBind.keyBind('key.sneak', true);
         }
         if (Math.abs(pos.x - tx) < 0.075 && Math.abs(pos.z - tz) < 0.075) {
             break;
         }
         Client.waitTick();
         timer += 1;
-        if (timeout && timer > timeout) {
-            Chat.log("walkTo timed out");
+        if (timeout != null && timer > timeout) {
+            Chat.log("LOG: walkTo() timed out");
             KeyBind.keyBind('key.forward', false);
             KeyBind.keyBind('key.sneak', false);
             return false;
