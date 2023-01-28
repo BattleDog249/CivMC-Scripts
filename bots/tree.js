@@ -8,11 +8,11 @@
 
 // Set to tools to be used in harvest
 logTool = "minecraft:diamond_axe";
-leafTool = "minecraft:shears";
+leafTool = "minecraft:stick";
 
 // Set to numerical level of efficiency enchant of selected tool
-efficiency = 0;
-haste = 0;
+efficiency = 4;
+haste = 2;
 
 // Set to the maximum height of tree
 // Oak: 6, Birch (No Height Limiter): 7
@@ -21,15 +21,15 @@ treeHeight = 6;
 
 // Set to (in blocks) distance between trees in a row
 // Mehri Farms: 4
-width = 4;
+treeWidth = 4;
 
 // Set to (in blocks) distance between rows
 // Mehri Oak/Birch: 4
 // Mehri Jungle: 5
-rowWidth = 4;
+rowWidth = 5;
 
 // Set to sapling type to replant
-sapling = "minecraft:birch_sapling";
+sapling = "minecraft:jungle_sapling";
 
 // Set to direction rows of trees in farm travel
 // lat: Rows go North/South
@@ -41,9 +41,12 @@ direction = "lat";
 // Testing coords
 //startX = -94.5;
 //startZ = 14.5;
-// First level of tree farm
-startX = 3247.5;
-startZ = -2397.5;
+// First level of Oak tree farm
+//startX = 3247.5;
+//startZ = -2397.5;
+// First level of Jungle tree farm
+startX = 2174.5;    //editted
+startZ = -1477.5;
 // Second level of tree farm
 //startX = 3247.5;
 //startZ = -2396.5;
@@ -61,9 +64,12 @@ startZ = -2397.5;
 // Testing coords
 //endX = -104.5;
 //endZ = 4.5;
-// First level of tree farm
-endX = 3172.5;
-endZ = -2332.5;
+// First level of Oak tree farm
+//endX = 3172.5;
+//endZ = -2332.5;
+// First level of Jungle tree farm
+endX = 2222.5;
+endZ = -1417.5;
 // Second level of tree farm
 //endX = 3172.5;
 //endZ = -2331.5;
@@ -98,7 +104,7 @@ function pick(name, hotbar = null, dmg = -1) {
     }
 
     slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];                   // Swap item to assigned hotbar slot
-    
+
     item = inv.getSlot(slot);                                                   // Acquire item in slot
     dura = item.getMaxDamage() - item.getDamage();                              // Determine item durability
     if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected and isn't sufficiently damaged
@@ -188,7 +194,7 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
 //      tool: Assign tool speed multiplier
 //          nothing = 1; wood = 2; stone = 4; iron = 6; diamond = 8; netherite = 9; gold = 12;
 //          Shears = 2 (1 on vine and glow lichen, 5 on wool, 15 on cobwebs and leaves)
-//          Sword = 1.5 (15 on cobwebs); 
+//          Sword = 1.5 (15 on cobwebs);
 //      hardness: Assign hardness value of block to be broken
 //          log = 2; leaves = 0.2; crop = 0;
 //      efficiency: Assign efficiency level of tool 0 - 5
@@ -220,7 +226,7 @@ function breakTicks(tool, hardness, efficiency = 0, haste = 0, buffer = 7) {
         return ticks;
     } else if (haste == 1 || haste == 2) {
         speed *= 0.2 * haste + 1;
-        
+
         damage = speed / hardness;
         damage /= 30;
         if (damage > 1) {
@@ -344,11 +350,11 @@ function interact(yaw, pitch, action, time, wait = 3) {
 // wait: Wait buffer
 function chopTree(yaw, width, wait = 5) {
     //Chat.log("LOG: Start - chopTree(yaw: " + yaw + ")");
-    //pick(name = leafTool, hotbar = null, dmg = 10);                             // Equip tool used to break leaves
-    //Client.waitTick(wait);                                                      // Wait buffer
-    //interact(yaw, 0, action = chop, time = breakTimes("leaves") * width);       // Break leaves in front of next tree, usually long enough to collect falling logs
+    pick(name = leafTool, hotbar = null, dmg = 10);                             // Equip tool used to break leaves
+    Client.waitTick(wait);                                                      // Wait buffer
+    interact(yaw, 0, action = chop, time = breakTimes("leaves") * width);       // Break leaves in front of next tree, usually long enough to collect falling logs
     pos = Player.getPlayer().getPos();                                          // Grab current coordinates
-    
+
     // Check all potential orientations
     if (yaw == 0) {                                                             // If facing south
         walkTo(pos.x, pos.z + width);                                               // Walk to tree
@@ -393,7 +399,7 @@ function chopTree(yaw, width, wait = 5) {
     for (i = 0; i < treeHeight - 2; i++) {                                      // For remaining height of tree
         interact(yaw, -90, action = chop, time = breakTimes("log"));                // Chop block in tree
     }
-    
+
     pick(name = sapling, hotbar = null, dmg = -1);                              // Equip sapling
     Client.waitTick(wait);                                                      // Wait buffer
     interact(yaw, 90, action = chop, time = 1);                                 // Break existing sapling, if present
@@ -418,12 +424,12 @@ if (direction == "lat") {
         turnYaw = 90;
         oppositeYaw = 180;
         while (pos.x > endX || pos.z < endZ) {
-    
+
             // Harvest whole row while not at end of row
             while (pos.z < endZ) {
-                chopTree(rowYaw, width);
+                chopTree(rowYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.x > endX) {
                 //Chat.log("LOG: Chopping next row!");
@@ -435,12 +441,12 @@ if (direction == "lat") {
                 Chat.log("ERROR: Out of bounds!");
                 break;
             }
-        
+
             // Harvest whole opposite row while not at end of row
             while (pos.z > startZ) {
-                chopTree(oppositeYaw, width);
+                chopTree(oppositeYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.x > endX) {
                 //Chat.log("LOG: Chopping next row!");
@@ -459,12 +465,12 @@ if (direction == "lat") {
         turnYaw = 270;
         oppositeYaw = 180;
         while (pos.x < endX || pos.z < endZ) {
-    
+
             // Harvest whole row while not at end of row
             while (pos.z < endZ) {
-                chopTree(rowYaw, width);
+                chopTree(rowYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.x < endX) {
                 //Chat.log("LOG: Chopping next row!");
@@ -476,12 +482,12 @@ if (direction == "lat") {
                 Chat.log("ERROR: Out of bounds!");
                 break;
             }
-        
+
             // Harvest whole opposite row while not at end of row
             while (pos.z > startZ) {
-                chopTree(oppositeYaw, width);
+                chopTree(oppositeYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.x < endX) {
                 //Chat.log("LOG: Chopping next row!");
@@ -500,12 +506,12 @@ if (direction == "lat") {
         turnYaw = 270;
         oppositeYaw = 0;
         while (pos.x < endX || pos.z > endZ) {
-    
+
             // Harvest whole row while not at end of row
             while (pos.z > endZ) {
-                chopTree(rowYaw, width);
+                chopTree(rowYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.x < endX) {
                 //Chat.log("LOG: Chopping next row!");
@@ -517,12 +523,12 @@ if (direction == "lat") {
                 Chat.log("ERROR: Out of bounds!");
                 break;
             }
-        
+
             // Harvest whole opposite row while not at end of row
             while (pos.z < startZ) {
-                chopTree(oppositeYaw, width);
+                chopTree(oppositeYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.x < endX) {
                 //Chat.log("LOG: Chopping next row!");
@@ -541,12 +547,12 @@ if (direction == "lat") {
         turnYaw = 90;
         oppositeYaw = 0;
         while (pos.x > endX || pos.z > endZ) {
-    
+
             // Harvest whole row while not at end of row
             while (pos.z > endZ) {
-                chopTree(rowYaw, width);
+                chopTree(rowYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.x > endX) {
                 //Chat.log("LOG: Chopping next row!");
@@ -558,12 +564,12 @@ if (direction == "lat") {
                 Chat.log("ERROR: Out of bounds!");
                 break;
             }
-        
+
             // Harvest whole opposite row while not at end of row
             while (pos.z < startZ) {
-                chopTree(oppositeYaw, width);
+                chopTree(oppositeYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.x > endX) {
                 //Chat.log("LOG: Chopping next row!");
@@ -584,12 +590,12 @@ if (direction == "lat") {
         turnYaw = 0;
         oppositeYaw = 270;
         while (pos.x > endX || pos.z < endZ) {
-    
+
             // Harvest whole row while not at end of row
             while (pos.x > endX) {
-                chopTree(rowYaw, width);
+                chopTree(rowYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.z < endZ) {
                 //Chat.log("LOG: Chopping next row!");
@@ -601,12 +607,12 @@ if (direction == "lat") {
                 Chat.log("ERROR: Out of bounds!");
                 break;
             }
-        
+
             // Harvest whole opposite row while not at end of row
             while (pos.x < startX) {
-                chopTree(oppositeYaw, width);
+                chopTree(oppositeYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.z < endZ) {
                 //Chat.log("LOG: Chopping next row!");
@@ -625,12 +631,12 @@ if (direction == "lat") {
         turnYaw = 0;
         oppositeYaw = 90;
         while (pos.x < endX || pos.z < endZ) {
-    
+
             // Harvest whole row while not at end of row
             while (pos.x < endX) {
-                chopTree(rowYaw, width);
+                chopTree(rowYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.z < endZ) {
                 //Chat.log("LOG: Chopping next row!");
@@ -642,12 +648,12 @@ if (direction == "lat") {
                 Chat.log("ERROR: Out of bounds!");
                 break;
             }
-        
+
             // Harvest whole opposite row while not at end of row
             while (pos.x > startX) {
-                chopTree(oppositeYaw, width);
+                chopTree(oppositeYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.z < endZ) {
                 //Chat.log("LOG: Chopping next row!");
@@ -666,12 +672,12 @@ if (direction == "lat") {
         turnYaw = 180;
         oppositeYaw = 90;
         while (pos.x < endX || pos.z > endZ) {
-    
+
             // Harvest whole row while not at end of row
             while (pos.x < endX) {
-                chopTree(rowYaw, width);
+                chopTree(rowYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.z > endZ) {
                 //Chat.log("LOG: Chopping next row!");
@@ -683,12 +689,12 @@ if (direction == "lat") {
                 Chat.log("ERROR: Out of bounds!");
                 break;
             }
-        
+
             // Harvest whole opposite row while not at end of row
             while (pos.x > startX) {
-                chopTree(oppositeYaw, width);
+                chopTree(oppositeYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.z > endZ) {
                 //Chat.log("LOG: Chopping next row!");
@@ -707,12 +713,12 @@ if (direction == "lat") {
         turnYaw = 180;
         oppositeYaw = 270;
         while (pos.x > endX || pos.z > endZ) {
-    
+
             // Harvest whole row while not at end of row
             while (pos.x > endX) {
-                chopTree(rowYaw, width);
+                chopTree(rowYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.z > endZ) {
                 //Chat.log("LOG: Chopping next row!");
@@ -724,12 +730,12 @@ if (direction == "lat") {
                 Chat.log("ERROR: Out of bounds!");
                 break;
             }
-        
+
             // Harvest whole opposite row while not at end of row
             while (pos.x < startX) {
-                chopTree(oppositeYaw, width);
+                chopTree(oppositeYaw, treeWidth);
             }
-        
+
             // Check if at last row in farm
             if (pos.z > endZ) {
                 //Chat.log("LOG: Chopping next row!");
