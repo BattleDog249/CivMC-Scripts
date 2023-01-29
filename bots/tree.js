@@ -8,15 +8,14 @@
 
 // Set to tools to be used in harvest
 logTool = "minecraft:diamond_axe";
-leafTool = "minecraft:stick";
+leafTool = "minecraft:shears";
 
 // Set to numerical level of efficiency enchant of selected tool
-efficiency = 4;
-haste = 2;
+efficiency = 5;
+haste = 0;
 
 // Set to the maximum height of tree
-// Oak: 6, Birch (No Height Limiter): 7
-// Mehri Jungle: 6
+// Oak: 6, Unrestricted Birch/Jungle/Spruce: 7
 treeHeight = 6;
 
 // Set to (in blocks) distance between trees in a row
@@ -26,10 +25,10 @@ treeWidth = 4;
 // Set to (in blocks) distance between rows
 // Mehri Oak/Birch: 4
 // Mehri Jungle: 5
-rowWidth = 5;
+rowWidth = 4;
 
 // Set to sapling type to replant
-sapling = "minecraft:jungle_sapling";
+sapling = "minecraft:birch_sapling";
 
 // Set to direction rows of trees in farm travel
 // lat: Rows go North/South
@@ -45,11 +44,11 @@ direction = "lat";
 //startX = 3247.5;
 //startZ = -2397.5;
 // First level of Jungle tree farm
-startX = 2150.5;
-startZ = -1477.5;
+//startX = 2150.5;
+//startZ = -1477.5;
 // Second level of tree farm
-//startX = 3247.5;
-//startZ = -2396.5;
+startX = 3247.5;
+startZ = -2396.5;
 // Third level of tree farm
 //startX = 3247.5;
 //startZ = -2395.5;
@@ -68,11 +67,11 @@ startZ = -1477.5;
 //endX = 3172.5;
 //endZ = -2332.5;
 // First level of Jungle tree farm
-endX = 2222.5;
-endZ = -1417.5;
+//endX = 2222.5;
+//endZ = -1417.5;
 // Second level of tree farm
-//endX = 3172.5;
-//endZ = -2331.5;
+endX = 3172.5;
+endZ = -2331.5;
 // Third level of tree farm
 //endX = 3172.5;
 //endZ = -2330.5;
@@ -348,7 +347,7 @@ function interact(yaw, pitch, action, time, wait = 3) {
 // yaw: Cardinal direction of tree to be harvested
 // width: Distance between trees
 // wait: Wait buffer
-function chopTree(yaw, width, wait = 5) {
+function chopTree(yaw, width, wait = 3) {
     //Chat.log("LOG: Start - chopTree(yaw: " + yaw + ")");
     pos = Player.getPlayer().getPos();                                          // Grab current coordinates
     Client.waitTick(wait);                                                      // Wait buffer
