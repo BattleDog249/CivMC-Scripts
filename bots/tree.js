@@ -404,7 +404,7 @@ function chopTree(yaw, width, wait = 3) {
     Client.waitTick(wait);                                                      // Wait buffer
     pick(name = logTool, hotbar = null, dmg = 10);                              // Equip logging tool
     Client.waitTick(wait);                                                      // Wait buffer
-    interact(yaw + 5, 30, action = chop, time = breakTimes("log") * 2);             // Chop bottom 2 blocks of tree
+    interact(yaw + 5, 30, action = chop, time = breakTimes("log") * 2);         // Chop bottom 2 blocks of tree
     
     if (yaw == 0) {                                                             // If facing south
         walkTo(pos.x, pos.z + 1);                                                   // Walk under tree
