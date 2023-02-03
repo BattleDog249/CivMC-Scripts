@@ -7,33 +7,33 @@
 */
 
 // Set to tools to be used in harvest
-logTool = "minecraft:diamond_axe";
-leafTool = "minecraft:shears";
+let logTool = "minecraft:diamond_axe";
+let leafTool = "minecraft:shears";
 
 // Set to numerical level of efficiency enchant of selected tool
-efficiency = 5;
-haste = 0;
+let efficiency = 5;
+let haste = 0;
 
 // Set to the maximum height of tree
 // Oak: 6, Unrestricted Birch/Jungle/Spruce: 7
-treeHeight = 6;
+let treeHeight = 6;
 
 // Set to (in blocks) distance between trees in a row
 // Mehri Farms: 4
-treeWidth = 4;
+let treeWidth = 4;
 
 // Set to (in blocks) distance between rows
 // Mehri Oak/Birch: 4
 // Mehri Jungle: 5
-rowWidth = 4;
+let rowWidth = 4;
 
 // Set to sapling type to replant
-sapling = "minecraft:birch_sapling";
+let sapling = "minecraft:birch_sapling";
 
 // Set to direction rows of trees in farm travel
 // lat: Rows go North/South
 // long: Rows go East/West
-direction = "lat";
+let direction = "lat";
 //direction = "long";
 
 // Assign to exact coords of starting block, typically lodestone
@@ -47,8 +47,8 @@ direction = "lat";
 //startX = 2150.5;
 //startZ = -1477.5;
 // Second level of tree farm
-startX = 3247.5;
-startZ = -2396.5;
+//startX = 3247.5;
+//startZ = -2396.5;
 // Third level of tree farm
 //startX = 3247.5;
 //startZ = -2395.5;
@@ -56,8 +56,8 @@ startZ = -2396.5;
 //startX = 3247.5;
 //startZ = -2394.5;
 // Fifth level of tree farm
-//startX = 3247.5;
-//startZ = -2393.5;
+let startX = 3247.5;
+let startZ = -2393.5;
 
 // Assign coords of last tree opposite of starting coords
 // Testing coords
@@ -70,8 +70,8 @@ startZ = -2396.5;
 //endX = 2222.5;
 //endZ = -1417.5;
 // Second level of tree farm
-endX = 3172.5;
-endZ = -2331.5;
+//endX = 3172.5;
+//endZ = -2331.5;
 // Third level of tree farm
 //endX = 3172.5;
 //endZ = -2330.5;
@@ -79,56 +79,117 @@ endZ = -2331.5;
 //endX = 3172.5;
 //endZ = -2329.5;
 // Fifth level of tree farm
-//endX = 3172.5;
-//endZ = -2328.5;
+let endX = 3172.5;
+let endZ = -2328.5;
 
 // chop = left click, plant = right click
-chop = 'key.attack';
-plant = 'key.use';
+let chop = 'key.attack';
+let plant = 'key.use';
 
 // Grab current coordinates
-pos = Player.getPlayer().getPos();
+let pos = Player.getPlayer().getPos();
 
 //  Function to equip a given item on the hotbar if located in inventory
 //      name: "minecraft:item_name"
 //      hotbar: Hotbar slot to swap item to, 0 - 9
 //      dmg: Minimum damage value, intended for use with tools to prevent breakages
-//  Known issue: If item to pick is already in desired slot, it will be swapped
 function pick(name, hotbar = null, dmg = -1) {
-    inv = Player.openInventory();                                               // Open player inventory
-    slots = inv.getMap();                                                       // Acquire inventory map
+    let inv = Player.openInventory();                                           // Open player inventory
+    let slots = inv.getMap();                                                   // Acquire inventory map
 
-    if (hotbar == null) {                                                       // If hotbar is assigned
-        hotbar = inv.getSelectedHotbarSlotIndex();                                  // Swap item to currently selected slot
+    if (hotbar == null) {                                                       // If hotbar parameter is not assigned a value
+        hotbar = inv.getSelectedHotbarSlotIndex();                                  // Set hotbar variable to currently selected slot
     }
 
-    slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];                   // Swap item to assigned hotbar slot
+    let slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];               // Swap item to assigned hotbar slot
 
-    item = inv.getSlot(slot);                                                   // Acquire item in slot
-    dura = item.getMaxDamage() - item.getDamage();                              // Determine item durability
+    let item = inv.getSlot(slot);                                               // Acquire item in slot
+    let dura = item.getMaxDamage() - item.getDamage();                          // Determine item durability
     if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected and isn't sufficiently damaged
         //Chat.log(`Found ${item.getItemId()} in hand at slot ${slot}.`);
-        inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
+        if (inv.getSelectedHotbarSlotIndex() != hotbar) {                           // If hotbar parameter is not already selected
+            inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
+        }
         Client.waitTick(5);                                                         // Wait buffer
         inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
         inv.close();                                                                // Close inventory
-        return true;                                                                // pick() success
+        return 0;                                                                   // pick() success
     }
 
     for (slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {   // For all slots in inventory
         item = inv.getSlot(slot);                                                   // Acquire item in slot
         dura = item.getMaxDamage() - item.getDamage();                              // Determine item durability
         if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is target and item isn't sufficiently damaged
-            //Chat.log(`Found ${item.getItemId()} in hand at slot ${slot}.`);
-            inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
+            Chat.log(`LOG: Found ${item.getItemId()} in slot ${slot}`);
+            // If item is not already in assigned hotbar slot, swap
+            if (slot != slots["hotbar"][hotbar]) {                                      // If item is not already in assigned hotbar slot
+                //Chat.log(`LOG: Found item in parameter hotbar slot ${hotbar}`);
+                inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot                                                             // pick() success
+            }
             Client.waitTick(5);                                                         // Wait buffer
             inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
             inv.close();                                                                // Close inventory
-            return true;                                                                // pick() success
+            return 0;                                                                   // pick() success
         }
     }
     inv.close();                                                                // Close inventory
-    return false;                                                               // pick() fail
+    Chat.log(`WARN: pick() could not find ${name}`);
+    return 1;                                                                   // pick() fail
+}
+
+// Function that returns number of open slots in inventory
+function countInventorySpace() {
+    let count = 0;
+    let inv = Player.openInventory();
+    let slots = inv.getMap();
+    for (let slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
+        let item = inv.getSlot(slot);
+        if (item.getItemId() === "minecraft:air") {
+            count += 1;
+        }
+    }
+    return count;
+}
+
+// Function for depositing name into a given inventory
+// timeout: Time in ms for failing to open inventory 
+function deposit(name, timeout = 100) {
+    KeyBind.keyBind("key.use", true);
+    Client.waitTick();
+    KeyBind.keyBind("key.use", false);
+    
+    let t = 0;
+    while (Hud.getOpenScreenName() == null && t < timeout) {
+        t += 1;
+        Client.waitTick();
+    }
+    
+    if (!(t < timeout)) {
+        Chat.log("ERROR 1: Failed to open inventory!");
+        return 1;
+    }
+    
+    let inv = Player.openInventory();
+    let slots = inv.getMap();
+    
+    if (!!("container" in slots)) {
+        Chat.log("ERROR 2: Inventory not a container!");
+        inv.close();
+        return 2;
+    }
+
+    for (let slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
+        let item = inv.getSlot(slot);
+        if (item.getItemId() === name) {
+            inv.quick(slot);
+            Client.waitTick();
+        }
+    }
+    
+    Time.sleep(500);
+    
+    inv.close();
+    return 0;
 }
 
 // Function that walks to the center of the given x, z coordinate; assumes flat y level
@@ -167,7 +228,7 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
         if (Math.abs(pos.x - tx) < 0.5 && Math.abs(pos.z - tz) < 0.5) {
             KeyBind.keyBind('key.sneak', true);
         }
-        if (Math.abs(pos.x - tx) < 0.075 && Math.abs(pos.z - tz) < 0.075) {
+        if (Math.abs(pos.x - tx) < 0.075 && Math.abs(pos.z - tz) < 0.075) {     //TODO: Experiment with these values to see if I can achieve tighter tolerances
             break;
         }
         Client.waitTick();
@@ -480,6 +541,13 @@ if (direction == "lat") {
                 break;
             }
         }
+        if (pos.z < endZ) {                 // If end point of farm is not diagonal to start point
+            walkTo(startX, startZ);             // Walk to start position, no turns necessary
+        } else {                            // Else the end point is diagonal to start point
+            walkTo(endX, startZ);               // Walk to adjacent corner
+            walkTo(startX, startZ);             // Then walk to start
+        }
+        interact(rowYaw, 80, action = chop, time = 1); // Left click lodestone, going down
     } else if (startX < endX && startZ < endZ) {
         //Chat.log("LOG: Starting NS-E");
         rowYaw = 0;

@@ -53,42 +53,48 @@ if (startz < endz) {
 //      name: "minecraft:item_name"
 //      hotbar: Hotbar slot to swap item to, 0 - 9
 //      dmg: Minimum damage value, intended for use with tools to prevent breakages
-//  Known issue: If item to pick is already in desired slot, it will be swapped
 function pick(name, hotbar = null, dmg = -1) {
-    inv = Player.openInventory();                                               // Open player inventory
-    slots = inv.getMap();                                                       // Acquire inventory map
+    let inv = Player.openInventory();                                           // Open player inventory
+    let slots = inv.getMap();                                                   // Acquire inventory map
 
-    if (hotbar == null) {                                                       // If hotbar is assigned
-        hotbar = inv.getSelectedHotbarSlotIndex();                                  // Swap item to currently selected slot
+    if (hotbar == null) {                                                       // If hotbar parameter is not assigned a value
+        hotbar = inv.getSelectedHotbarSlotIndex();                                  // Set hotbar variable to currently selected slot
     }
 
-    slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];                   // Swap item to assigned hotbar slot
-    
-    item = inv.getSlot(slot);                                                   // Acquire item in slot
-    dura = item.getMaxDamage() - item.getDamage();                              // Determine item durability
+    let slot = slots["hotbar"][inv.getSelectedHotbarSlotIndex()];               // Swap item to assigned hotbar slot
+
+    let item = inv.getSlot(slot);                                               // Acquire item in slot
+    let dura = item.getMaxDamage() - item.getDamage();                          // Determine item durability
     if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is already selected and isn't sufficiently damaged
         //Chat.log(`Found ${item.getItemId()} in hand at slot ${slot}.`);
-        inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
+        if (inv.getSelectedHotbarSlotIndex() != hotbar) {                           // If hotbar parameter is not already selected
+            inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
+        }
         Client.waitTick(5);                                                         // Wait buffer
         inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
         inv.close();                                                                // Close inventory
-        return true;                                                                // pick() success
+        return 0;                                                                   // pick() success
     }
 
     for (slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {   // For all slots in inventory
         item = inv.getSlot(slot);                                                   // Acquire item in slot
         dura = item.getMaxDamage() - item.getDamage();                              // Determine item durability
         if (item.getItemId() === name && (dmg == -1 || dura > dmg)) {               // If item is target and item isn't sufficiently damaged
-            //Chat.log(`Found ${item.getItemId()} in hand at slot ${slot}.`);
-            inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot
+            Chat.log(`LOG: Found ${item.getItemId()} in slot ${slot}`);
+            // If item is not already in assigned hotbar slot, swap
+            if (slot != slots["hotbar"][hotbar]) {                                      // If item is not already in assigned hotbar slot
+                //Chat.log(`LOG: Found item in parameter hotbar slot ${hotbar}`);
+                inv.swap(slot, slots["hotbar"][hotbar]);                                    // Swap item in slot with hotbar slot                                                             // pick() success
+            }
             Client.waitTick(5);                                                         // Wait buffer
             inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
             inv.close();                                                                // Close inventory
-            return true;                                                                // pick() success
+            return 0;                                                                   // pick() success
         }
     }
     inv.close();                                                                // Close inventory
-    return false;                                                               // pick() fail
+    Chat.log(`WARN: pick() could not find ${name}`);
+    return 1;                                                                   // pick() fail
 }
 
 // Function that walks to the center of the given x, z coordinate; assumes flat y level
@@ -147,35 +153,35 @@ function walkTo(x = null, z = null, precise = false, timeout = null) {
     return true;
 }
 
-// Function for depositing a given item
+// Function for depositing name into a given inventory
 // timeout: Time in ms for failing to open inventory 
-function deposit(name, timeout = 500) {
+function deposit(name, timeout = 100) {
     KeyBind.keyBind("key.use", true);
     Client.waitTick();
     KeyBind.keyBind("key.use", false);
     
-    t = 0;
+    let t = 0;
     while (Hud.getOpenScreenName() == null && t < timeout) {
         t += 1;
         Client.waitTick();
     }
     
     if (!(t < timeout)) {
-        Chat.log("failed to open inventory, cancelling");
-        return false;
+        Chat.log("ERROR 1: Failed to open inventory!");
+        return 1;
     }
     
-    inv = Player.openInventory();
-    slots = inv.getMap();
+    let inv = Player.openInventory();
+    let slots = inv.getMap();
     
     if (!!("container" in slots)) {
-        Chat.log("inventory not a container, cancelling");
+        Chat.log("ERROR 2: Inventory not a container!");
         inv.close();
+        return 2;
     }
 
     for (let slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {
-        item = inv.getSlot(slot);
-        num = item.getCount();
+        let item = inv.getSlot(slot);
         if (item.getItemId() === name) {
             inv.quick(slot);
             Client.waitTick();
@@ -185,6 +191,7 @@ function deposit(name, timeout = 500) {
     Time.sleep(500);
     
     inv.close();
+    return 0;
 }
 
 // Function for harvesting a row of crops via right-click
@@ -239,7 +246,7 @@ function countItems(name, location = null) {
     return count;
 }
 
-// Function that counts accessable inventory space
+// Function that returns number of open slots in inventory
 function countInventorySpace() {
     let count = 0;
     let inv = Player.openInventory();
