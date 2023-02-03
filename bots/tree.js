@@ -7,84 +7,84 @@
 */
 
 // Set to tools to be used in harvest
-let logTool = "minecraft:diamond_axe";
-let leafTool = "minecraft:shears";
+const logTool = "minecraft:diamond_axe";
+const leafTool = "minecraft:shears";
 
 // Set to numerical level of efficiency enchant of selected tool
 let efficiency = 5;
-let haste = 0;
+const haste = 0;
 
 // Set to the maximum height of tree
 // Oak: 6, Unrestricted Birch/Jungle/Spruce: 7
-let treeHeight = 6;
+const treeHeight = 6;
 
 // Set to (in blocks) distance between trees in a row
 // Mehri Farms: 4
-let treeWidth = 4;
+const treeWidth = 4;
 
 // Set to (in blocks) distance between rows
 // Mehri Oak/Birch: 4
 // Mehri Jungle: 5
-let rowWidth = 4;
+const rowWidth = 4;
 
 // Set to sapling type to replant
-let sapling = "minecraft:birch_sapling";
+const sapling = "minecraft:birch_sapling";
 
 // Set to direction rows of trees in farm travel
 // lat: Rows go North/South
 // long: Rows go East/West
-let direction = "lat";
-//direction = "long";
+const direction = "lat";
+//const direction = "long";
 
 // Assign to exact coords of starting block, typically lodestone
 // Testing coords
-//startX = -94.5;
-//startZ = 14.5;
+//const startX = -94.5;
+//const startZ = 14.5;
 // First level of Oak tree farm
-//startX = 3247.5;
-//startZ = -2397.5;
+const startX = 3247.5;
+const startZ = -2397.5;
 // First level of Jungle tree farm
-//startX = 2150.5;
-//startZ = -1477.5;
+//const startX = 2150.5;
+//const startZ = -1477.5;
 // Second level of tree farm
-//startX = 3247.5;
-//startZ = -2396.5;
+//const startX = 3247.5;
+//const startZ = -2396.5;
 // Third level of tree farm
-//startX = 3247.5;
-//startZ = -2395.5;
+//const startX = 3247.5;
+//const startZ = -2395.5;
 // Fourth level of tree farm
-//startX = 3247.5;
-//startZ = -2394.5;
+//const startX = 3247.5;
+//const startZ = -2394.5;
 // Fifth level of tree farm
-let startX = 3247.5;
-let startZ = -2393.5;
+//const startX = 3247.5;
+//const startZ = -2393.5;
 
 // Assign coords of last tree opposite of starting coords
 // Testing coords
-//endX = -104.5;
-//endZ = 4.5;
+//const endX = -104.5;
+//const endZ = 4.5;
 // First level of Oak tree farm
-//endX = 3172.5;
-//endZ = -2332.5;
+const endX = 3172.5;
+const endZ = -2332.5;
 // First level of Jungle tree farm
-//endX = 2222.5;
-//endZ = -1417.5;
+//const endX = 2222.5;
+//const endZ = -1417.5;
 // Second level of tree farm
-//endX = 3172.5;
-//endZ = -2331.5;
+//const endX = 3172.5;
+//const endZ = -2331.5;
 // Third level of tree farm
-//endX = 3172.5;
-//endZ = -2330.5;
+//const endX = 3172.5;
+//const endZ = -2330.5;
 // Fourth level of tree farm
-//endX = 3172.5;
-//endZ = -2329.5;
+//const endX = 3172.5;
+//const endZ = -2329.5;
 // Fifth level of tree farm
-let endX = 3172.5;
-let endZ = -2328.5;
+//const endX = 3172.5;
+//const endZ = -2328.5;
 
 // chop = left click, plant = right click
-let chop = 'key.attack';
-let plant = 'key.use';
+const chop = 'key.attack';
+const plant = 'key.use';
 
 // Grab current coordinates
 let pos = Player.getPlayer().getPos();
@@ -113,7 +113,7 @@ function pick(name, hotbar = null, dmg = -1) {
         Client.waitTick(5);                                                         // Wait buffer
         inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
         inv.close();                                                                // Close inventory
-        return 0;                                                                   // pick() success
+        return true;                                                                // pick() success
     }
 
     for (slot of Array.from(slots.get("main")).concat(slots.get("hotbar"))) {   // For all slots in inventory
@@ -129,12 +129,12 @@ function pick(name, hotbar = null, dmg = -1) {
             Client.waitTick(5);                                                         // Wait buffer
             inv.setSelectedHotbarSlotIndex(hotbar);                                     // Select hotbar slot
             inv.close();                                                                // Close inventory
-            return 0;                                                                   // pick() success
+            return true;                                                                // pick() success
         }
     }
     inv.close();                                                                // Close inventory
-    Chat.log(`WARN: pick() could not find ${name}`);
-    return 1;                                                                   // pick() fail
+    //Chat.log(`WARN: pick() could not find ${name}`);
+    return false;                                                               // pick() fail
 }
 
 // Function that returns number of open slots in inventory
@@ -412,7 +412,7 @@ function chopTree(yaw, width, wait = 3) {
     //Chat.log("LOG: Start - chopTree(yaw: " + yaw + ")");
     pos = Player.getPlayer().getPos();                                          // Grab current coordinates
     Client.waitTick(wait);                                                      // Wait buffer
-    pick(name = leafTool, hotbar = null, dmg = 10);                             // Equip tool used to break leaves
+    pick(name = leafTool, hotbar = null, dmg = 10);                             // Select tool used to break leaves
     Client.waitTick(wait);                                                      // Wait buffer
     if (width >= 5) {                                                           // If leaves to break go out of reach
         reach = 4;
@@ -544,7 +544,7 @@ if (direction == "lat") {
         if (pos.z < endZ) {                 // If end point of farm is not diagonal to start point
             walkTo(startX, startZ);             // Walk to start position, no turns necessary
         } else {                            // Else the end point is diagonal to start point
-            walkTo(endX, startZ);               // Walk to adjacent corner
+            walkTo(pos.x, startZ);              // Walk to adjacent corner
             walkTo(startX, startZ);             // Then walk to start
         }
         interact(rowYaw, 80, action = chop, time = 1); // Left click lodestone, going down
